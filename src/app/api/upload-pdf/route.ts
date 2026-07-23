@@ -4,24 +4,26 @@ import { Readable } from 'stream';
 import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-// Initialize Cloudinary configuration from environment variables
-let cloudinaryConfigured = false;
-const cloudinaryUrl = process.env.CLOUDINARY_URL;
-if (cloudinaryUrl) {
-  const match = cloudinaryUrl.match(/^cloudinary:\/\/([^:]+):([^@]+)@([^\/]+)$/);
-  if (match) {
-    const [, apiKey, apiSecret, cloudName] = match;
-    cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
-    cloudinaryConfigured = true;
+function configureCloudinary(): boolean {
+  const cloudinaryUrl = process.env.CLOUDINARY_URL;
+  if (cloudinaryUrl) {
+    const match = cloudinaryUrl.match(/^cloudinary:\/\/([^:]+):([^@]+)@([^\/]+)$/);
+    if (match) {
+      const [, apiKey, apiSecret, cloudName] = match;
+      cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
+      return true;
+    }
   }
-} else {
+
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
   if (cloudName && apiKey && apiSecret) {
     cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
-    cloudinaryConfigured = true;
+    return true;
   }
+
+  return false;
 }
 
 function getBaseUrl(request: Request): string {
@@ -85,7 +87,8 @@ export async function POST(request: Request) {
     }
 
     // Try Cloudinary if configured
-    if (cloudinaryConfigured) {
+    const isConfigured = configureCloudinary();
+    if (isConfigured) {
       try {
         const result = await new Promise((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
