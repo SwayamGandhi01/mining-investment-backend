@@ -24,16 +24,16 @@ export default function YearFilterTabs({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center justify-between gap-3 bg-card border border-border rounded-xl p-3 shadow-sm",
+        "flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card border border-border rounded-xl p-3 shadow-sm overflow-hidden",
         className
       )}
     >
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted">
+      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted shrink-0">
         <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
         <span>EDITION FILTER:</span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full sm:w-auto">
         {years.map((year) => {
           const yearStr = String(year);
           const isActive = selectedYear === yearStr;
@@ -43,7 +43,7 @@ export default function YearFilterTabs({
               type="button"
               onClick={() => onYearChange(yearStr)}
               className={cn(
-                "px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 shadow-sm flex items-center gap-1.5",
+                "px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 shadow-sm flex items-center gap-1.5 shrink-0 whitespace-nowrap",
                 isActive
                   ? "bg-primary-600 text-white shadow-primary-600/20 ring-2 ring-primary-500/30 scale-[1.02]"
                   : "bg-secondary-100 dark:bg-card-hover text-muted hover:text-foreground hover:bg-secondary-200"
@@ -60,7 +60,7 @@ export default function YearFilterTabs({
             type="button"
             onClick={() => onYearChange("all")}
             className={cn(
-              "px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 shadow-sm",
+              "px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 shadow-sm shrink-0 whitespace-nowrap",
               selectedYear === "all"
                 ? "bg-foreground text-background"
                 : "bg-secondary-100 dark:bg-card-hover text-muted hover:text-foreground"

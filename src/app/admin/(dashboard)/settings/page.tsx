@@ -52,6 +52,22 @@ export default function AdminSettingsPage() {
       const res = await axios.put("/api/settings", data);
       if (res.data.success) {
         toast.success("Settings updated successfully!");
+        
+        // Dynamically update favicon in browser tab
+        const fav = data.favicon?.url || data.logo?.url;
+        if (fav) {
+          let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+          if (!link) {
+            link = document.createElement("link");
+            link.rel = "shortcut icon";
+            document.getElementsByTagName("head")[0].appendChild(link);
+          }
+          link.href = fav;
+        }
+
+        if (data.siteName) {
+          document.title = `${data.siteName} - Admin`;
+        }
       }
     } catch {
       toast.error("Failed to update settings");

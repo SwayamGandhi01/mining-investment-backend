@@ -149,7 +149,7 @@ export default function EditCompanyPage({
             <ToggleField name="isFeatured" label="Featured Company" />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4">
             <Link
               href="/admin/companies"
               className="px-5 py-2.5 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-card-hover transition-colors"

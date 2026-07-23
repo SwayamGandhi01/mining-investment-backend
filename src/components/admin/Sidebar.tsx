@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import axios from "axios";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -12,7 +14,7 @@ import {
   FileText,
   Clock,
   Newspaper,
-  Image,
+  Image as ImageIcon,
   ClipboardList,
   UserCircle,
   Settings,
@@ -29,71 +31,19 @@ interface SidebarProps {
 }
 
 const navItems = [
-  {
-    label: "Dashboard",
-    href: "/admin/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Events",
-    href: "/admin/events",
-    icon: Calendar,
-  },
-  {
-    label: "Brochures",
-    href: "/admin/brochures",
-    icon: FileText,
-  },
-  {
-    label: "Agendas",
-    href: "/admin/agendas",
-    icon: Clock,
-  },
-  {
-    label: "Speakers",
-    href: "/admin/speakers",
-    icon: Users,
-  },
-  {
-    label: "Sponsors",
-    href: "/admin/sponsors",
-    icon: Handshake,
-  },
-  {
-    label: "Exhibitors",
-    href: "/admin/exhibitors",
-    icon: Store,
-  },
-  {
-    label: "Companies",
-    href: "/admin/companies",
-    icon: Building2,
-  },
-  {
-    label: "Blogs",
-    href: "/admin/blogs",
-    icon: Newspaper,
-  },
-  {
-    label: "Gallery",
-    href: "/admin/gallery",
-    icon: Image,
-  },
-  {
-    label: "Registrations",
-    href: "/admin/registrations",
-    icon: ClipboardList,
-  },
-  {
-    label: "Users",
-    href: "/admin/users",
-    icon: UserCircle,
-  },
-  {
-    label: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
-  },
+  { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { label: "Events", href: "/admin/events", icon: Calendar },
+  { label: "Brochures", href: "/admin/brochures", icon: FileText },
+  { label: "Agendas", href: "/admin/agendas", icon: Clock },
+  { label: "Speakers", href: "/admin/speakers", icon: Users },
+  { label: "Sponsors", href: "/admin/sponsors", icon: Handshake },
+  { label: "Exhibitors", href: "/admin/exhibitors", icon: Store },
+  { label: "Companies", href: "/admin/companies", icon: Building2 },
+  { label: "Blogs", href: "/admin/blogs", icon: Newspaper },
+  { label: "Gallery", href: "/admin/gallery", icon: ImageIcon },
+  { label: "Registrations", href: "/admin/registrations", icon: ClipboardList },
+  { label: "Users", href: "/admin/users", icon: UserCircle },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function Sidebar({
@@ -103,6 +53,39 @@ export default function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const pathname = usePathname();
+  const [siteName, setSiteName] = useState<string>("InvestmentAdmin");
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [faviconUrl, setFaviconUrl] = useState<string>("");
+
+  useEffect(() => {
+    let isMounted = true;
+    axios.get("/api/settings").then((res) => {
+      if (isMounted && res.data?.success && res.data?.data) {
+        const data = res.data.data;
+        if (data.siteName) setSiteName(data.siteName);
+        if (data.logo?.url) setLogoUrl(data.logo.url);
+        
+        const fav = data.favicon?.url || data.logo?.url;
+        if (fav) {
+          setFaviconUrl(fav);
+          // Dynamically update browser tab favicon
+          let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+          if (!link) {
+            link = document.createElement("link");
+            link.rel = "shortcut icon";
+            document.getElementsByTagName("head")[0].appendChild(link);
+          }
+          link.href = fav;
+        }
+
+        // Dynamically update browser document title prefix
+        if (data.siteName) {
+          document.title = `${data.siteName} - Admin`;
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   return (
     <>
@@ -128,17 +111,40 @@ export default function Sidebar({
           {!isCollapsed && (
             <Link
               href="/admin/dashboard"
-              className="text-xl font-bold text-white tracking-tight"
+              className="flex items-center gap-2.5 overflow-hidden"
             >
-              Investment<span className="text-primary-400">Admin</span>
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={logoUrl}
+                  alt={siteName}
+                  className="h-9 max-w-[150px] object-contain rounded"
+                />
+              ) : (
+                <span className="text-xl font-bold text-white tracking-tight truncate">
+                  {siteName}
+                </span>
+              )}
             </Link>
           )}
+
           {isCollapsed && (
             <Link
               href="/admin/dashboard"
-              className="text-xl font-bold text-primary-400 mx-auto"
+              className="flex items-center justify-center mx-auto"
             >
-              IA
+              {faviconUrl || logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={faviconUrl || logoUrl}
+                  alt={siteName}
+                  className="h-8 w-8 object-contain rounded"
+                />
+              ) : (
+                <span className="text-xl font-bold text-primary-400">
+                  {siteName.charAt(0)}
+                </span>
+              )}
             </Link>
           )}
 
@@ -154,7 +160,7 @@ export default function Sidebar({
           <button
             onClick={onToggleCollapse}
             className={cn(
-              "hidden lg:flex items-center justify-center w-7 h-7 rounded-full",
+              "hidden lg:flex items-center justify-center w-7 h-7 rounded-full ml-2 shrink-0",
               "bg-white/10 hover:bg-white/20 text-sidebar-text hover:text-white transition-colors",
               isCollapsed && "mx-auto rotate-180"
             )}
@@ -196,8 +202,8 @@ export default function Sidebar({
         {/* Bottom section */}
         <div className="p-3 border-t border-white/10">
           {!isCollapsed && (
-            <p className="text-xs text-sidebar-text/50 text-center">
-              © {new Date().getFullYear()} Investment Admin
+            <p className="text-xs text-sidebar-text/50 text-center truncate">
+              © {new Date().getFullYear()} {siteName}
             </p>
           )}
         </div>

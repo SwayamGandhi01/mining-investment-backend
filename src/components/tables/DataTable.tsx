@@ -266,7 +266,7 @@ export default function DataTable<T extends { _id: string; status?: string; isAc
         {/* Footer / Pagination */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-border bg-card-hover/30 text-xs text-muted">
           {/* Items per page */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-center sm:text-left">
             <span>Rows per page:</span>
             <select
               value={limit}
@@ -279,7 +279,7 @@ export default function DataTable<T extends { _id: string; status?: string; isAc
                 </option>
               ))}
             </select>
-            <span>
+            <span className="whitespace-nowrap">
               Showing {data.length > 0 ? (page - 1) * limit + 1 : 0} to{" "}
               {Math.min(page * limit, total)} of {total} entries
             </span>
