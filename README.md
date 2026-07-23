@@ -1,36 +1,159 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Investment Platform Backend & Admin Panel
 
-## Getting Started
+A scalable enterprise backend built with **Next.js 15 App Router**, **TypeScript**, **MongoDB Atlas (Mongoose)**, **Cloudinary**, and **JWT Cookie Authentication**.
 
-First, run the development server:
+Includes a full admin management panel with real-time CRUD operations, dark mode, responsive tables, and forms. Designed to seamlessly connect to a separate Next.js frontend or mobile app.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Tech Stack
+
+- **Framework:** Next.js 15 (App Router, Route Handlers)
+- **Language:** TypeScript
+- **Database:** MongoDB Atlas + Mongoose (Singleton Pattern with global cache)
+- **Media:** Cloudinary SDK
+- **Authentication:** JWT (jsonwebtoken & jose for Edge Middleware), HTTP-Only Cookies, bcryptjs
+- **Validation:** Zod
+- **Forms:** React Hook Form + @hookform/resolvers
+- **UI:** Tailwind CSS v4, Lucide React, Sonner Toasts
+
+---
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── admin/                 # Admin Panel Pages
+│   │   ├── login/
+│   │   ├── (dashboard)/
+│   │   │   ├── dashboard/
+│   │   │   ├── events/
+│   │   │   ├── speakers/
+│   │   │   ├── sponsors/
+│   │   │   ├── exhibitors/
+│   │   │   ├── companies/
+│   │   │   ├── blogs/
+│   │   │   ├── gallery/
+│   │   │   ├── registrations/
+│   │   │   ├── users/
+│   │   │   └── settings/
+│   ├── api/                   # REST API Route Handlers
+│   │   ├── auth/ (login, logout, me, seed)
+│   │   ├── upload/
+│   │   ├── events/
+│   │   ├── speakers/
+│   │   ├── sponsors/
+│   │   ├── exhibitors/
+│   │   ├── companies/
+│   │   ├── blogs/
+│   │   ├── gallery/
+│   │   ├── registrations/
+│   │   ├── users/
+│   │   └── settings/
+├── components/
+│   ├── admin/                 # Header, Sidebar, Theme, Auth context
+│   ├── forms/                 # Reusable Form Controls (TextField, RichText, Upload, etc.)
+│   ├── tables/                # Reusable DataTable with pagination/search/sort
+│   └── common/                # ConfirmDialog, Badge, StatusToggle, EmptyState
+├── lib/                       # Utility Modules
+│   ├── mongodb.ts             # Singleton Mongoose Connection
+│   ├── cloudinary.ts          # Upload / Delete Helpers
+│   ├── auth.ts                # Passwords & Session
+│   ├── jwt.ts                 # Dual JWT (jsonwebtoken + jose)
+│   ├── response.ts            # Standard API Envelopes
+│   ├── pagination.ts          # Query Builders
+│   ├── slug.ts                # Auto Unique Slugs
+│   └── validators.ts          # Common Zod Schemas
+├── models/                    # Mongoose Data Models (10 modules + Admin)
+└── middleware.ts              # Route Guard & JWT Edge Validator
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` to `.env.local` and configure your credentials:
 
-## Learn More
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/investment-db?retryWrites=true&w=majority
+JWT_SECRET=your-super-secret-jwt-key
+JWT_EXPIRES_IN=7d
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Setup & Running Locally
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+2. **Seed Initial Superadmin:**
+   Call the one-time seed API endpoint to create the initial admin account:
+   ```bash
+   curl -X POST http://localhost:3000/api/auth/seed \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Admin", "email": "admin@example.com", "password": "Password123!"}'
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Start Development Server:**
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000/admin/login` in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Production Build Verification:**
+   ```bash
+   npm run build
+   ```
+
+---
+
+## API Standard Response Format
+
+**Success:**
+```json
+{
+  "success": true,
+  "message": "Operation completed successfully",
+  "data": {}
+}
+```
+
+**Paginated Response:**
+```json
+{
+  "success": true,
+  "message": "Data retrieved successfully",
+  "data": [],
+  "pagination": {
+    "total": 50,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 5,
+    "hasNextPage": true,
+    "hasPrevPage": false
+  }
+}
+```
+
+---
+
+## Features & Modules
+
+- **Events:** Manage dates, venues, agendas, cover image, gallery, SEO tags.
+- **Speakers:** Keynotes, job titles, bio, social links, status.
+- **Sponsors:** Tiers (Platinum, Gold, Silver, Bronze), brand logos, links.
+- **Exhibitors:** Booth numbers, category, products, contact details.
+- **Companies:** Corporate directory, industry, headquarters, social media.
+- **Blogs:** Articles, rich text, categories, featured post toggles.
+- **Gallery:** Multi-photo album uploads powered by Cloudinary.
+- **Registrations:** Unique auto-generated registration codes (`REG-XXXXXX`), attendee ticket status.
+- **Users:** Member accounts, active state toggles, profiles.
+- **Settings:** Platform title, description, maintenance mode toggle, logo uploads.

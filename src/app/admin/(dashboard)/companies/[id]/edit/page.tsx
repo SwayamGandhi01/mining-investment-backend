@@ -1,0 +1,172 @@
+"use client";
+
+import { useState, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { toast } from "sonner";
+import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { TextField } from "@/components/forms/TextField";
+import { TextareaField } from "@/components/forms/TextareaField";
+import { SelectField } from "@/components/forms/SelectField";
+import { ToggleField } from "@/components/forms/ToggleField";
+import { ImageUploadField } from "@/components/forms/ImageUploadField";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { companySchema, CompanyInput } from "@/lib/validations/company";
+
+const YEAR_OPTIONS = [2024, 2025, 2026, 2027, 2028, 2029].map((y) => ({
+  label: String(y),
+  value: String(y),
+}));
+
+const COMPANY_TYPE_OPTIONS = [
+  { label: "Explorer", value: "EXPLORER" },
+  { label: "Developer", value: "DEVELOPER" },
+  { label: "Producer", value: "PRODUCER" },
+  { label: "Service Provider", value: "SERVICE PROVIDER" },
+  { label: "Royalty Company", value: "ROYALTY" },
+  { label: "Investor", value: "INVESTOR" },
+];
+
+export default function EditCompanyPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  const methods = useForm<CompanyInput>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(companySchema) as any,
+  });
+
+  useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const res = await axios.get(`/api/companies/${id}`);
+        if (res.data.success) {
+          methods.reset(res.data.data);
+        }
+      } catch {
+        toast.error("Failed to load company");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCompany();
+  }, [id, methods]);
+
+  const onSubmit = async (data: CompanyInput) => {
+    setSubmitting(true);
+    try {
+      const res = await axios.put(`/api/companies/${id}`, data);
+      if (res.data.success) {
+        toast.success("Company profile updated!");
+        router.push("/admin/companies");
+      }
+    } catch {
+      toast.error("Failed to update company");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) return <LoadingSpinner fullScreen text="Loading company profile..." />;
+
+  return (
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="flex items-center gap-4">
+        <Link
+          href="/admin/companies"
+          className="p-2 border border-border rounded-lg bg-card hover:bg-card-hover text-muted hover:text-foreground transition-colors"
+        >
+          <ArrowLeft size={18} />
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Edit Company</h1>
+          <p className="text-sm text-muted mt-0.5">Update corporate profile</p>
+        </div>
+      </div>
+
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="bg-card border border-border rounded-xl p-6 space-y-4">
+            <h2 className="text-base font-semibold text-foreground border-b border-border pb-2">
+              Company Overview
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <TextField name="name" label="Company Name" required />
+              <TextField name="ticker" label="Stock Ticker" placeholder="TSX-V: EFF" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <SelectField name="type" label="Company Type" options={COMPANY_TYPE_OPTIONS} />
+              <TextField name="location" label="Location" placeholder="CANADA/QC" />
+              <TextField name="commodities" label="Commodities (comma-separated)" placeholder="Cu, Pb, Zn, Ag" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <TextField name="industry" label="Industry Sector" />
+              <TextField name="headquarters" label="Headquarters" />
+            </div>
+            <TextareaField name="description" label="Company Description" />
+            <ImageUploadField name="logo" label="Company Logo" folder="companies" />
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-6 space-y-4">
+            <h2 className="text-base font-semibold text-foreground border-b border-border pb-2">
+              Corporate Details & Contact
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <TextField name="website" label="Website URL" />
+              <TextField name="contactEmail" label="Contact Email" />
+              <TextField name="contactPhone" label="Contact Phone" />
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-6 space-y-4">
+            <h2 className="text-base font-semibold text-foreground border-b border-border pb-2">
+              Settings &amp; Edition
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SelectField
+                name="year"
+                label="Event Edition (Year)"
+                options={YEAR_OPTIONS}
+              />
+              <SelectField
+                name="status"
+                label="Status"
+                options={[
+                  { label: "Published", value: "published" },
+                  { label: "Draft", value: "draft" },
+                ]}
+              />
+            </div>
+            <ToggleField name="isFeatured" label="Featured Company" />
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <Link
+              href="/admin/companies"
+              className="px-5 py-2.5 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-card-hover transition-colors"
+            >
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm rounded-lg shadow-sm transition-colors disabled:opacity-50"
+            >
+              {submitting ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+              Update Company
+            </button>
+          </div>
+        </form>
+      </FormProvider>
+    </div>
+  );
+}
