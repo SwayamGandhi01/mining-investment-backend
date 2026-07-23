@@ -1,13 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local"
-  );
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections from growing exponentially
@@ -20,6 +12,14 @@ if (!cached) {
 }
 
 async function dbConnect(): Promise<mongoose.Connection> {
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error(
+      "Please set MONGODB_URI in your Vercel Environment Variables or .env file"
+    );
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
