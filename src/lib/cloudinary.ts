@@ -1,18 +1,18 @@
 import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 
-// Configure Cloudinary
-let cloudinaryConfigured = false;
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-const apiKey = process.env.CLOUDINARY_API_KEY;
-const apiSecret = process.env.CLOUDINARY_API_SECRET;
+function configureCloudinary(): boolean {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-if (cloudName && apiKey && apiSecret) {
+  if (!cloudName || !apiKey || !apiSecret) return false;
+
   cloudinary.config({
     cloud_name: cloudName,
     api_key: apiKey,
     api_secret: apiSecret,
   });
-  cloudinaryConfigured = true;
+  return true;
 }
 
 export interface CloudinaryUploadResult {
@@ -79,7 +79,8 @@ export async function uploadImage(
   file: string,
   folder: string = "general"
 ): Promise<CloudinaryUploadResult> {
-  if (cloudinaryConfigured) {
+  const isConfigured = configureCloudinary();
+  if (isConfigured) {
     try {
       const result: UploadApiResponse = await cloudinary.uploader.upload(file, {
         folder: `investment/${folder}`,
