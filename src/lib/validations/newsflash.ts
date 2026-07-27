@@ -2,7 +2,11 @@ import { z } from "zod";
 import { imageSchema, seoFieldsSchema } from "@/lib/validators";
 
 export const pdfAttachmentSchema = z.object({
-  url: z.string().url("Invalid PDF URL"),
+  // Allow empty string for URL so forms that register nested fields
+  // (e.g. "pdfAttachment.url") but leave them blank don't fail validation.
+  // Accept non-absolute URLs/paths as well (some uploads return relative paths).
+  // Empty string will be treated as "no PDF provided" by the superRefine check.
+  url: z.string().min(1, "Invalid PDF URL").or(z.literal("")).optional(),
   publicId: z.string().optional(),
   name: z.string().optional(),
 });
@@ -22,8 +26,12 @@ export const newsflashSchema = z
   })
   .merge(seoFieldsSchema)
   .superRefine((data, ctx) => {
-    const hasContent = Boolean(data.content?.trim());
-    const hasPdf = Boolean(data.pdfAttachment?.url?.trim());
+    const hasContent = typeof data.content === "string" && data.content.trim().length > 0;
+    const hasPdf =
+      !!data.pdfAttachment &&
+      typeof data.pdfAttachment.url === "string" &&
+      data.pdfAttachment.url.trim().length > 0;
+
     if (!hasContent && !hasPdf) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

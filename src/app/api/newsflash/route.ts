@@ -61,6 +61,10 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
+    // Normalize empty nested pdfAttachment fields coming from forms
+    if (body?.pdfAttachment && typeof body.pdfAttachment.url === "string" && !body.pdfAttachment.url.trim()) {
+      delete body.pdfAttachment;
+    }
     const validation = newsflashSchema.safeParse(body);
 
     if (!validation.success) {
