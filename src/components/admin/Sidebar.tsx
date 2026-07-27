@@ -21,6 +21,9 @@ import {
   Store,
   X,
   ChevronLeft,
+  UserCheck,
+  Building,
+  Zap,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -40,8 +43,11 @@ const navItems = [
   { label: "Exhibitors", href: "/admin/exhibitors", icon: Store },
   { label: "Companies", href: "/admin/companies", icon: Building2 },
   { label: "Blogs", href: "/admin/blogs", icon: Newspaper },
+  { label: "Newsflash", href: "/admin/newsflash", icon: Zap },
   { label: "Gallery", href: "/admin/gallery", icon: ImageIcon },
   { label: "Registrations", href: "/admin/registrations", icon: ClipboardList },
+  { label: "Investor Registrations", href: "/admin/investor-registrations", icon: UserCheck },
+  { label: "Company Registrations", href: "/admin/company-registrations", icon: Building },
   { label: "Users", href: "/admin/users", icon: UserCircle },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];

@@ -40,13 +40,19 @@ export function buildSortQuery(params: PaginationParams): Record<string, 1 | -1>
 /**
  * Build a MongoDB search query for given fields.
  */
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function buildSearchQuery(
   search: string,
   fields: string[]
 ): Record<string, unknown> {
-  if (!search.trim()) return {};
+  const trimmed = search.trim();
+  if (!trimmed) return {};
 
-  const searchRegex = new RegExp(search.trim(), "i");
+  const safeQuery = escapeRegExp(trimmed);
+  const searchRegex = new RegExp(safeQuery, "i");
   return {
     $or: fields.map((field) => ({ [field]: searchRegex })),
   };

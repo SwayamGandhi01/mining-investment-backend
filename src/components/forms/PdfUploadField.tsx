@@ -9,19 +9,26 @@ interface PdfUploadFieldProps {
   name?: string;
   label?: string;
   placeholder?: string;
+  publicIdField?: string;
+  nameField?: string;
+}
+
+function getNestedError(errors: any, path: string) {
+  return path.split(".").reduce((obj, segment) => obj?.[segment], errors);
 }
 
 export function PdfUploadField({
   name = "pdfUrl",
   label = "PDF Document",
   placeholder = "Upload a PDF or enter a direct URL",
+  publicIdField,
+  nameField,
 }: PdfUploadFieldProps) {
   const { register, setValue, watch, formState: { errors } } = useFormContext();
   const [uploading, setUploading] = useState(false);
   const currentUrl = watch(name);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const errorMessage = (errors[name] as any)?.message;
+  const errorMessage = getNestedError(errors, name)?.message;
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,6 +52,18 @@ export function PdfUploadField({
       const json = await res.json();
       if (res.ok && json.success && json.url) {
         setValue(name, json.url, { shouldValidate: true, shouldDirty: true });
+        if (publicIdField && json.publicId) {
+          setValue(publicIdField, json.publicId, {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+        }
+        if (nameField) {
+          setValue(nameField, file.name, {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+        }
         toast.success("PDF uploaded successfully!");
       } else {
         toast.error(json.message || "Failed to upload PDF");
@@ -54,7 +73,6 @@ export function PdfUploadField({
       toast.error("Upload error. Please try again.");
     } finally {
       setUploading(false);
-      // Reset input value so same file can be selected again if needed
       e.target.value = "";
     }
   };

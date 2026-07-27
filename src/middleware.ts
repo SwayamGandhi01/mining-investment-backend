@@ -8,7 +8,7 @@ const publicRoutes = [
   "/api/auth/seed",
 ];
 
-// Routes that should be accessible without auth (public API endpoints)
+// Routes that should be accessible without auth (public API endpoints — GET only)
 const publicApiPrefixes = [
   "/api/events",
   "/api/speakers",
@@ -17,6 +17,13 @@ const publicApiPrefixes = [
   "/api/companies",
   "/api/blogs",
   "/api/gallery",
+  "/api/newsflash",
+];
+
+// Routes that allow all HTTP methods without auth (public form submission endpoints)
+const publicPostApiPrefixes = [
+  "/api/investor-registrations",
+  "/api/company-registrations",
 ];
 
 export async function middleware(request: NextRequest) {
@@ -33,6 +40,11 @@ export async function middleware(request: NextRequest) {
 
   // Allow public routes
   if (publicRoutes.some((route) => pathname === route)) {
+    return NextResponse.next();
+  }
+
+  // Allow all methods on public form-submission API prefixes
+  if (publicPostApiPrefixes.some((prefix) => pathname.startsWith(prefix))) {
     return NextResponse.next();
   }
 
