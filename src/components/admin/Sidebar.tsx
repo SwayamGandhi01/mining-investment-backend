@@ -44,6 +44,7 @@ const navItems = [
   { label: "Companies", href: "/admin/companies", icon: Building2 },
   { label: "Blogs", href: "/admin/blogs", icon: Newspaper },
   { label: "Newsflash", href: "/admin/newsflash", icon: Zap },
+  { label: "Latest News", href: "/admin/latest-news", icon: Newspaper },
   { label: "Gallery", href: "/admin/gallery", icon: ImageIcon },
   { label: "Registrations", href: "/admin/registrations", icon: ClipboardList },
   { label: "Investor Registrations", href: "/admin/investor-registrations", icon: UserCheck },

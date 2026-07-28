@@ -31,6 +31,7 @@ const labelMap: Record<string, string> = {
   exhibitors: "Exhibitors",
   companies: "Companies",
   blogs: "Blogs",
+  "latest-news": "Latest News",
   gallery: "Gallery",
   registrations: "Registrations",
   users: "Users",

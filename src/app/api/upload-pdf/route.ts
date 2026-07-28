@@ -90,12 +90,22 @@ export async function POST(request: Request) {
     const isConfigured = configureCloudinary();
     if (isConfigured) {
       try {
+        const baseName = file.name.replace(/\.[^/.]+$/, "");
+        const safePublicId = baseName
+          .replace(/[^a-zA-Z0-9]+/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "")
+          .toLowerCase();
+        const publicId = `${safePublicId}-${Date.now()}`;
+
         const result = await new Promise((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
             {
               resource_type: 'raw',
               folder: 'pdfs',
-              public_id: file.name.replace(/\.[^/.]+$/, ''),
+              public_id: publicId,
+              unique_filename: false,
+              overwrite: true,
             },
             (error, res) => {
               if (error) reject(error);
