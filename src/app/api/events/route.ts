@@ -8,6 +8,24 @@ import { eventSchema } from "@/lib/validations/event";
 import { formatZodErrors } from "@/lib/validators";
 import { requireAuth } from "@/lib/auth";
 
+const normalizeEventPayload = (input: Record<string, any>) => {
+  const normalized = { ...input };
+  const agendaGroups = Array.isArray(normalized.agenda)
+    ? normalized.agenda
+    : Array.isArray(normalized.interactiveAgenda)
+      ? normalized.interactiveAgenda
+      : Array.isArray(normalized.days)
+        ? normalized.days
+        : [];
+
+  if (agendaGroups.length > 0) {
+    normalized.agenda = agendaGroups;
+    normalized.interactiveAgenda = agendaGroups;
+  }
+
+  return normalized;
+};
+
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
@@ -33,20 +51,36 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const validation = eventSchema.safeParse(body);
+    const items = Array.isArray(body) ? body : [body];
 
-    if (!validation.success) {
-      return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+    if (items.length === 0) {
+      return errorResponse("At least one event entry is required", 400);
     }
 
-    const slug = await ensureUniqueSlug(generateSlug(validation.data.title), "Event");
+    const createdEvents = [] as Array<any>;
 
-    const newEvent = await Event.create({
-      ...validation.data,
-      slug,
-    });
+    for (const item of items) {
+      const normalizedItem = normalizeEventPayload(item);
+      const validation = eventSchema.safeParse(normalizedItem);
 
-    return successResponse(newEvent, "Event created successfully", 201);
+      if (!validation.success) {
+        return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+      }
+
+      const slug = await ensureUniqueSlug(generateSlug(validation.data.title), "Event");
+
+      const newEvent = await Event.create({
+        ...validation.data,
+        slug,
+      });
+
+      createdEvents.push(newEvent);
+    }
+
+    const responseData = Array.isArray(body) ? createdEvents : createdEvents[0];
+    const message = Array.isArray(body) ? "Events created successfully" : "Event created successfully";
+
+    return successResponse(responseData, message, 201);
   } catch (error) {
     return handleApiError(error);
   }

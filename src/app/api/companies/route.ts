@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     const params = getPaginationParams(request);
     const filter = buildFilterQuery(
       params,
+      
       buildSearchQuery(params.search, [
         "name",
         "ticker",
@@ -45,20 +46,35 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const validation = companySchema.safeParse(body);
+    const items = Array.isArray(body) ? body : [body];
 
-    if (!validation.success) {
-      return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+    if (items.length === 0) {
+      return errorResponse("At least one company entry is required", 400);
     }
 
-    const slug = await ensureUniqueSlug(generateSlug(validation.data.name), "Company");
+    const createdCompanies = [] as Array<any>;
 
-    const newCompany = await Company.create({
-      ...validation.data,
-      slug,
-    });
+    for (const item of items) {
+      const validation = companySchema.safeParse(item);
 
-    return successResponse(newCompany, "Company created successfully", 201);
+      if (!validation.success) {
+        return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+      }
+
+      const slug = await ensureUniqueSlug(generateSlug(validation.data.name), "Company");
+
+      const newCompany = await Company.create({
+        ...validation.data,
+        slug,
+      });
+
+      createdCompanies.push(newCompany);
+    }
+
+    const responseData = Array.isArray(body) ? createdCompanies : createdCompanies[0];
+    const message = Array.isArray(body) ? "Companies created successfully" : "Company created successfully";
+
+    return successResponse(responseData, message, 201);
   } catch (error) {
     return handleApiError(error);
   }

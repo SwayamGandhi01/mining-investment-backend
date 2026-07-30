@@ -19,6 +19,28 @@ export interface IEvent extends Document {
   isFeatured: boolean;
   registrationLink?: string;
   maxAttendees?: number;
+  agenda?: Array<{
+    day: string;
+    date?: string;
+    items?: Array<{
+      time: string;
+      title: string;
+      description?: string;
+      speaker?: string;
+      location?: string;
+    }>;
+  }>;
+  interactiveAgenda?: Array<{
+    day: string;
+    date?: string;
+    items?: Array<{
+      time: string;
+      title: string;
+      description?: string;
+      speaker?: string;
+      location?: string;
+    }>;
+  }>;
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string;
@@ -51,6 +73,42 @@ const EventSchema = new Schema<IEvent>(
     isFeatured: { type: Boolean, default: false },
     registrationLink: { type: String, default: "" },
     maxAttendees: { type: Number, default: 0 },
+    agenda: {
+      type: [
+        {
+          day: { type: String, required: true, trim: true },
+          date: { type: String, trim: true },
+          items: [
+            {
+              time: { type: String, required: true, trim: true },
+              title: { type: String, required: true, trim: true },
+              description: { type: String, trim: true },
+              speaker: { type: String, trim: true },
+              location: { type: String, trim: true },
+            },
+          ],
+        },
+      ],
+      default: [],
+    },
+    interactiveAgenda: {
+      type: [
+        {
+          day: { type: String, required: true, trim: true },
+          date: { type: String, trim: true },
+          items: [
+            {
+              time: { type: String, required: true, trim: true },
+              title: { type: String, required: true, trim: true },
+              description: { type: String, trim: true },
+              speaker: { type: String, trim: true },
+              location: { type: String, trim: true },
+            },
+          ],
+        },
+      ],
+      default: [],
+    },
     seoTitle: { type: String, default: "" },
     seoDescription: { type: String, default: "" },
     seoKeywords: { type: String, default: "" },

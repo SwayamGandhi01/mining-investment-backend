@@ -5,6 +5,7 @@ import { successResponse, errorResponse, handleApiError } from "@/lib/response";
 import { eventSchema } from "@/lib/validations/event";
 import { formatZodErrors } from "@/lib/validators";
 import { isValidObjectId } from "@/lib/utils";
+import mongoose from "mongoose";
 import { requireAuth } from "@/lib/auth";
 import { generateSlug, ensureUniqueSlug } from "@/lib/slug";
 
@@ -16,10 +17,20 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    const query = isValidObjectId(id) ? { _id: id } : { slug: id };
-    const event = await Event.findOne({ ...query, isDeleted: false })
-      .populate("speakers sponsors exhibitors")
-      .lean();
+    const query = isValidObjectId(id) ? { _id: new mongoose.Types.ObjectId(id) } : { slug: id };
+    console.log('EVENTS GET params id=', id, 'query=', query);
+    // Use direct collection lookup to avoid potential mongoose population/connection issues
+    let event: any = null;
+    const notDeletedFilter = { isDeleted: { $ne: true } };
+    if (isValidObjectId(id)) {
+      // try ObjectId match first, but also fall back to slug if the id happens to be slug-shaped
+      event =
+        (await Event.collection.findOne({ _id: new mongoose.Types.ObjectId(id), ...notDeletedFilter })) ||
+        (await Event.collection.findOne({ slug: id, ...notDeletedFilter }));
+    } else {
+      event = await Event.collection.findOne({ slug: id, ...notDeletedFilter });
+    }
+    console.log('EVENTS GET found=', Boolean(event));
 
     if (!event) {
       return errorResponse("Event not found", 404);

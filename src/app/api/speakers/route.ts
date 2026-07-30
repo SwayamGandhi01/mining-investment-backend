@@ -33,20 +33,35 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const validation = speakerSchema.safeParse(body);
+    const items = Array.isArray(body) ? body : [body];
 
-    if (!validation.success) {
-      return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+    if (items.length === 0) {
+      return errorResponse("At least one speaker entry is required", 400);
     }
 
-    const slug = await ensureUniqueSlug(generateSlug(validation.data.name), "Speaker");
+    const createdSpeakers = [] as Array<any>;
 
-    const newSpeaker = await Speaker.create({
-      ...validation.data,
-      slug,
-    });
+    for (const item of items) {
+      const validation = speakerSchema.safeParse(item);
 
-    return successResponse(newSpeaker, "Speaker created successfully", 201);
+      if (!validation.success) {
+        return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+      }
+
+      const slug = await ensureUniqueSlug(generateSlug(validation.data.name), "Speaker");
+
+      const newSpeaker = await Speaker.create({
+        ...validation.data,
+        slug,
+      });
+
+      createdSpeakers.push(newSpeaker);
+    }
+
+    const responseData = Array.isArray(body) ? createdSpeakers : createdSpeakers[0];
+    const message = Array.isArray(body) ? "Speakers created successfully" : "Speaker created successfully";
+
+    return successResponse(responseData, message, 201);
   } catch (error) {
     return handleApiError(error);
   }

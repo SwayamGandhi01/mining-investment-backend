@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "sonner";
@@ -40,10 +40,42 @@ export default function CreateAgendaPage() {
       venue: "",
       description: "",
       status: "published",
+      days: [],
     },
   });
 
   const scheduleType = methods.watch("scheduleType");
+
+  const { control } = methods;
+  const daysField = useFieldArray({ control, name: "days" as const });
+
+  function DayItemsEditor({ parentIndex, methods }: { parentIndex: number; methods: any }) {
+    const { control } = methods;
+    const itemsField = useFieldArray({ control, name: `days.${parentIndex}.items` as any });
+
+    return (
+      <div className="space-y-2">
+        {itemsField.fields.map((it, idx) => (
+          <div key={it.id} className="grid grid-cols-1 sm:grid-cols-6 gap-2 items-end mb-2">
+            <TextField name={`days.${parentIndex}.items.${idx}.time`} label="Time" />
+            <TextField name={`days.${parentIndex}.items.${idx}.title`} label="Title" className="sm:col-span-3" />
+            <TextField name={`days.${parentIndex}.items.${idx}.speaker`} label="Speaker" />
+            <TextField name={`days.${parentIndex}.items.${idx}.location`} label="Location" />
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => itemsField.remove(idx)} className="px-2 py-1 bg-danger-50 text-danger-700 rounded">Remove</button>
+            </div>
+            <TextareaField name={`days.${parentIndex}.items.${idx}.description`} label="Description" className="sm:col-span-6" rows={2} />
+          </div>
+        ))}
+
+        <div>
+          <button type="button" onClick={() => itemsField.append({ time: "", title: "", description: "", speaker: "", location: "" })} className="px-3 py-2 bg-secondary-600 text-white rounded">
+            Add Item
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const onSubmit = async (data: AgendaInput) => {
     setSubmitting(true);

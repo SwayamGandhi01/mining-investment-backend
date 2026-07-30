@@ -33,21 +33,36 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const validation = blogSchema.safeParse(body);
+    const items = Array.isArray(body) ? body : [body];
 
-    if (!validation.success) {
-      return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+    if (items.length === 0) {
+      return errorResponse("At least one blog entry is required", 400);
     }
 
-    const slug = await ensureUniqueSlug(generateSlug(validation.data.title), "Blog");
+    const createdBlogs = [] as Array<any>;
 
-    const newBlog = await Blog.create({
-      ...validation.data,
-      slug,
-      author: session.id,
-    });
+    for (const item of items) {
+      const validation = blogSchema.safeParse(item);
 
-    return successResponse(newBlog, "Blog post created successfully", 201);
+      if (!validation.success) {
+        return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+      }
+
+      const slug = await ensureUniqueSlug(generateSlug(validation.data.title), "Blog");
+
+      const newBlog = await Blog.create({
+        ...validation.data,
+        slug,
+        author: session.id,
+      });
+
+      createdBlogs.push(newBlog);
+    }
+
+    const responseData = Array.isArray(body) ? createdBlogs : createdBlogs[0];
+    const message = Array.isArray(body) ? "Blog posts created successfully" : "Blog post created successfully";
+
+    return successResponse(responseData, message, 201);
   } catch (error) {
     return handleApiError(error);
   }

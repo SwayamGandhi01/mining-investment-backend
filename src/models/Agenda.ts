@@ -11,6 +11,17 @@ export interface IAgenda extends Document {
   venue?: string;
   description?: string;
   status: "published" | "draft";
+  days?: Array<{
+    day: string;
+    date?: string;
+    items?: Array<{
+      time: string;
+      title: string;
+      description?: string;
+      speaker?: string;
+      location?: string;
+    }>;
+  }>;
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -32,6 +43,24 @@ const AgendaSchema = new Schema<IAgenda>(
     venue: { type: String, default: "" },
     description: { type: String, default: "" },
     status: { type: String, enum: ["published", "draft"], default: "published" },
+    days: {
+      type: [
+        {
+          day: { type: String, required: true, trim: true },
+          date: { type: String, trim: true },
+          items: [
+            {
+              time: { type: String, required: true, trim: true },
+              title: { type: String, required: true, trim: true },
+              description: { type: String, trim: true },
+              speaker: { type: String, trim: true },
+              location: { type: String, trim: true },
+            },
+          ],
+        },
+      ],
+      default: [],
+    },
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }

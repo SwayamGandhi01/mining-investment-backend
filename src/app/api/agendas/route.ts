@@ -30,26 +30,68 @@ export async function GET(request: NextRequest) {
   }
 }
 
+const normalizeAgendaPayload = (input: Record<string, any>) => {
+  const normalized = { ...input };
+  const dayGroups = Array.isArray(normalized.days)
+    ? normalized.days
+    : Array.isArray(normalized.schedule)
+      ? normalized.schedule
+      : Array.isArray(normalized.agenda)
+        ? normalized.agenda
+        : [];
+
+  if (dayGroups.length > 0) {
+    normalized.days = dayGroups;
+    normalized.scheduleType = normalized.scheduleType || "interactive";
+
+    if (!normalized.eventDates) {
+      const eventDates = dayGroups
+        .map((day: any) => day.date || day.day)
+        .filter(Boolean)
+        .join(", ");
+      normalized.eventDates = eventDates;
+    }
+  }
+
+  return normalized;
+};
+
 export async function POST(request: NextRequest) {
   try {
     await requireAuth();
     await dbConnect();
 
     const body = await request.json();
-    const validation = agendaSchema.safeParse(body);
+    const items = Array.isArray(body) ? body : [body];
 
-    if (!validation.success) {
-      return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+    if (items.length === 0) {
+      return errorResponse("At least one agenda entry is required", 400);
     }
 
-    const slug = await ensureUniqueSlug(generateSlug(validation.data.title), "Agenda");
+    const createdAgendas = [] as Array<any>;
 
-    const newAgenda = await Agenda.create({
-      ...validation.data,
-      slug,
-    });
+    for (const item of items) {
+      const normalizedItem = normalizeAgendaPayload(item);
+      const validation = agendaSchema.safeParse(normalizedItem);
 
-    return successResponse(newAgenda, "Agenda created successfully", 201);
+      if (!validation.success) {
+        return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
+      }
+
+      const slug = await ensureUniqueSlug(generateSlug(validation.data.title), "Agenda");
+
+      const newAgenda = await Agenda.create({
+        ...validation.data,
+        slug,
+      });
+
+      createdAgendas.push(newAgenda);
+    }
+
+    const responseData = Array.isArray(body) ? createdAgendas : createdAgendas[0];
+    const message = Array.isArray(body) ? "Agendas created successfully" : "Agenda created successfully";
+
+    return successResponse(responseData, message, 201);
   } catch (error) {
     return handleApiError(error);
   }
