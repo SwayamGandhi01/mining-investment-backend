@@ -12,6 +12,12 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect();
     const params = getPaginationParams(request);
+
+    // default to 2027 sponsors only when no year is provided in the request
+    if (!params.year) {
+      params.year = String(2027);
+    }
+
     const filter = buildFilterQuery(params, buildSearchQuery(params.search, ["name", "tier", "description"]));
     const sort = buildSortQuery(params);
     const skip = getSkip(params.page, params.limit);
