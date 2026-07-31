@@ -6,7 +6,7 @@ export const sponsorSchema = z.object({
   logo: imageSchema.optional(),
   description: z.string().optional(),
   website: z.string().url().optional().or(z.literal("")),
-  tier: z.enum(["platinum", "gold", "silver", "bronze"]).default("gold"),
+  tier: z.enum(["specialParticipation", "platinum", "gold", "silver", "copper", "media"]).default("gold"),
   year: z.coerce.number().default(2027),
   order: z.coerce.number().default(0),
   status: z.enum(["published", "draft"]).default("published"),

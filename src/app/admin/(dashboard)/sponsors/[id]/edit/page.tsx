@@ -96,10 +96,12 @@ export default function EditSponsorPage({
                 name="tier"
                 label="Sponsorship Tier"
                 options={[
+                  { label: "Special Participation", value: "specialParticipation" },
                   { label: "Platinum", value: "platinum" },
                   { label: "Gold", value: "gold" },
                   { label: "Silver", value: "silver" },
-                  { label: "Bronze", value: "bronze" },
+                  { label: "Copper", value: "copper" },
+                  { label: "Media & Partners", value: "media" },
                 ]}
               />
               <TextField name="website" label="Website URL" />

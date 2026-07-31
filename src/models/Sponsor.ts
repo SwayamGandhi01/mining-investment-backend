@@ -6,7 +6,7 @@ export interface ISponsor extends Document {
   logo?: { url: string; publicId: string };
   description?: string;
   website?: string;
-  tier: "platinum" | "gold" | "silver" | "bronze";
+  tier: "specialParticipation" | "platinum" | "gold" | "silver" | "copper" | "media";
   year: number;
   events?: mongoose.Types.ObjectId[];
   order: number;
@@ -28,7 +28,7 @@ const SponsorSchema = new Schema<ISponsor>(
     website: { type: String, default: "" },
     tier: {
       type: String,
-      enum: ["platinum", "gold", "silver", "bronze"],
+      enum: ["specialParticipation", "platinum", "gold", "silver", "copper", "media"],
       default: "gold",
     },
     year: { type: Number, default: 2027, index: true },

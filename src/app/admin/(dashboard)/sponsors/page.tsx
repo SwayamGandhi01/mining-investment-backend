@@ -14,7 +14,7 @@ interface SponsorItem {
   _id: string;
   name: string;
   slug: string;
-  tier: "platinum" | "gold" | "silver" | "bronze";
+  tier: "specialParticipation" | "platinum" | "gold" | "silver" | "copper" | "media";
   year?: number;
   website?: string;
   status: "published" | "draft";
@@ -99,13 +99,23 @@ export default function AdminSponsorsPage() {
       header: "Sponsorship Tier",
       accessorKey: "tier",
       cell: (item) => {
-        const tierVariants: Record<string, "default" | "warning" | "info" | "secondary"> = {
+        const tierVariants: Record<string, "default" | "warning" | "info" | "secondary" | "success" | "danger"> = {
+          specialParticipation: "success",
           platinum: "default",
           gold: "warning",
           silver: "info",
-          bronze: "secondary",
+          copper: "secondary",
+          media: "danger",
         };
-        return <Badge variant={tierVariants[item.tier]}>{item.tier.toUpperCase()}</Badge>;
+        const labelMap: Record<string, string> = {
+          specialParticipation: "SPECIAL PARTICIPATION",
+          platinum: "PLATINUM",
+          gold: "GOLD",
+          silver: "SILVER",
+          copper: "COPPER",
+          media: "MEDIA & PARTNERS",
+        };
+        return <Badge variant={tierVariants[item.tier]}>{labelMap[item.tier]}</Badge>;
       },
     },
     {
