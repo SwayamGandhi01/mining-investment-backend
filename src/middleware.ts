@@ -20,6 +20,7 @@ const publicApiPrefixes = [
   "/api/newsflash",
   "/api/latest-news",
   "/api/agendas",
+  "/api/articles",
 ];
 
 // Routes that allow all HTTP methods without auth (public form submission endpoints)

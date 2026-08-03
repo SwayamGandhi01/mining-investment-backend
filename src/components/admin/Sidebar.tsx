@@ -24,6 +24,7 @@ import {
   UserCheck,
   Building,
   Zap,
+  BookOpen,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -42,6 +43,7 @@ const navItems = [
   { label: "Sponsors", href: "/admin/sponsors", icon: Handshake },
   { label: "Exhibitors", href: "/admin/exhibitors", icon: Store },
   { label: "Companies", href: "/admin/companies", icon: Building2 },
+  { label: "Articles", href: "/admin/articles", icon: BookOpen },
   { label: "Blogs", href: "/admin/blogs", icon: Newspaper },
   { label: "Newsflash", href: "/admin/newsflash", icon: Zap },
   { label: "Latest News", href: "/admin/latest-news", icon: Newspaper },
