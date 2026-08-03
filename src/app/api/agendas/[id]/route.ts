@@ -92,11 +92,10 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const deleted = await Agenda.findOneAndUpdate(
-      { _id: id, isDeleted: { $ne: true } },
-      { $set: { isDeleted: true } },
-      { new: true }
-    );
+    const deleted = await Agenda.findOneAndDelete({
+      _id: id,
+      isDeleted: { $ne: true },
+    });
 
     if (!deleted) {
       return errorResponse("Agenda not found", 404);

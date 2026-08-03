@@ -155,7 +155,7 @@ export async function PATCH(
 
 /**
  * DELETE /api/latest-news/[id]
- * Soft delete latest news item (admin protected).
+ * Permanently delete latest news item (admin protected).
  */
 export async function DELETE(
   request: NextRequest,
@@ -167,11 +167,7 @@ export async function DELETE(
     const id = await resolveParams(params);
     if (!id) return errorResponse("Missing latest news ID", 400);
 
-    const item = await LatestNews.findByIdAndUpdate(
-      id,
-      { isDeleted: true },
-      { new: true }
-    );
+    const item = await LatestNews.findByIdAndDelete(id);
     if (!item) return errorResponse("Latest news item not found", 404);
 
     return successResponse(null, "Latest news item deleted successfully");

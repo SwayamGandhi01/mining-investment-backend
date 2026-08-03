@@ -87,7 +87,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const blog = await Blog.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const blog = await Blog.findByIdAndDelete(id);
     if (!blog) return errorResponse("Blog post not found", 404);
 
     return successResponse(null, "Blog post deleted successfully");

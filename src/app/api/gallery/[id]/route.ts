@@ -87,7 +87,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const gallery = await Gallery.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const gallery = await Gallery.findByIdAndDelete(id);
     if (!gallery) return errorResponse("Gallery not found", 404);
 
     return successResponse(null, "Gallery deleted successfully");

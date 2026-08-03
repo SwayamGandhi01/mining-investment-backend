@@ -78,7 +78,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const user = await User.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const user = await User.findByIdAndDelete(id);
     if (!user) return errorResponse("User not found", 404);
 
     return successResponse(null, "User deleted successfully");

@@ -87,7 +87,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const sponsor = await Sponsor.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const sponsor = await Sponsor.findByIdAndDelete(id);
     if (!sponsor) return errorResponse("Sponsor not found", 404);
 
     return successResponse(null, "Sponsor deleted successfully");

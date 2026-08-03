@@ -155,7 +155,7 @@ export async function PATCH(
 
 /**
  * DELETE /api/newsflash/[id]
- * Soft delete newsflash item (admin protected).
+ * Permanently delete newsflash item (admin protected).
  */
 export async function DELETE(
   request: NextRequest,
@@ -167,11 +167,7 @@ export async function DELETE(
     const id = await resolveParams(params);
     if (!id) return errorResponse("Missing newsflash ID", 400);
 
-    const item = await Newsflash.findByIdAndUpdate(
-      id,
-      { isDeleted: true },
-      { new: true }
-    );
+    const item = await Newsflash.findByIdAndDelete(id);
     if (!item) return errorResponse("Newsflash article not found", 404);
 
     return successResponse(null, "Newsflash article deleted successfully");

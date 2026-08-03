@@ -78,7 +78,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const registration = await Registration.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const registration = await Registration.findByIdAndDelete(id);
     if (!registration) return errorResponse("Registration not found", 404);
 
     return successResponse(null, "Registration deleted successfully");

@@ -87,7 +87,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const exhibitor = await Exhibitor.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const exhibitor = await Exhibitor.findByIdAndDelete(id);
     if (!exhibitor) return errorResponse("Exhibitor not found", 404);
 
     return successResponse(null, "Exhibitor deleted successfully");

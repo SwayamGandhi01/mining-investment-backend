@@ -87,7 +87,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const company = await Company.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const company = await Company.findByIdAndDelete(id);
     if (!company) return errorResponse("Company not found", 404);
 
     return successResponse(null, "Company deleted successfully");

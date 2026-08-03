@@ -92,11 +92,10 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const deleted = await Brochure.findOneAndUpdate(
-      { _id: id, isDeleted: { $ne: true } },
-      { $set: { isDeleted: true } },
-      { new: true }
-    );
+    const deleted = await Brochure.findOneAndDelete({
+      _id: id,
+      isDeleted: { $ne: true },
+    });
 
     if (!deleted) {
       return errorResponse("Brochure not found", 404);

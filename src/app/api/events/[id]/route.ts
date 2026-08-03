@@ -108,7 +108,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const event = await Event.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const event = await Event.findByIdAndDelete(id);
 
     if (!event) {
       return errorResponse("Event not found", 404);

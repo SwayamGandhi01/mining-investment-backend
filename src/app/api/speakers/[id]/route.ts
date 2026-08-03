@@ -87,7 +87,7 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const speaker = await Speaker.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const speaker = await Speaker.findByIdAndDelete(id);
     if (!speaker) return errorResponse("Speaker not found", 404);
 
     return successResponse(null, "Speaker deleted successfully");
