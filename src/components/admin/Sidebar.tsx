@@ -25,6 +25,7 @@ import {
   Building,
   Zap,
   BookOpen,
+  GraduationCap,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -51,6 +52,7 @@ const navItems = [
   { label: "Registrations", href: "/admin/registrations", icon: ClipboardList },
   { label: "Investor Registrations", href: "/admin/investor-registrations", icon: UserCheck },
   { label: "Company Registrations", href: "/admin/company-registrations", icon: Building },
+  { label: "Student Sponsorships", href: "/admin/student-sponsorships", icon: GraduationCap },
   { label: "Users", href: "/admin/users", icon: UserCircle },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];

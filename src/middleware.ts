@@ -27,6 +27,7 @@ const publicApiPrefixes = [
 const publicPostApiPrefixes = [
   "/api/investor-registrations",
   "/api/company-registrations",
+  "/api/student-sponsorships",
 ];
 
 export async function middleware(request: NextRequest) {
