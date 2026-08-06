@@ -28,7 +28,6 @@ const labelMap: Record<string, string> = {
   events: "Events",
   speakers: "Speakers",
   sponsors: "Sponsors",
-  exhibitors: "Exhibitors",
   companies: "Companies",
   blogs: "Blogs",
   "latest-news": "Latest News",

@@ -8,6 +8,7 @@ import { isValidObjectId } from "@/lib/utils";
 import mongoose from "mongoose";
 import { requireAuth } from "@/lib/auth";
 import { generateSlug, ensureUniqueSlug } from "@/lib/slug";
+import { sortEventAgendas, cleanEventAgendas } from "@/lib/agenda";
 
 export async function GET(
   request: NextRequest,
@@ -36,7 +37,9 @@ export async function GET(
       return errorResponse("Event not found", 404);
     }
 
-    return successResponse(event);
+    // Sort on read as well, so events stored before session ordering existed
+    // still come back chronologically without a migration.
+    return successResponse(sortEventAgendas(event));
   } catch (error) {
     return handleApiError(error);
   }
@@ -52,7 +55,9 @@ export async function PUT(
     const { id } = await params;
 
     const body = await request.json();
-    const validation = eventSchema.safeParse(body);
+    // Strip placeholder agenda rows before validating, otherwise an untouched
+    // blank session fails the required time/title rules.
+    const validation = eventSchema.safeParse(cleanEventAgendas(body));
 
     if (!validation.success) {
       return errorResponse("Validation failed", 400, formatZodErrors(validation.error));
@@ -68,7 +73,7 @@ export async function PUT(
       slug = await ensureUniqueSlug(generateSlug(validation.data.title), "Event", id);
     }
 
-    Object.assign(event, validation.data, { slug });
+    Object.assign(event, cleanEventAgendas(validation.data), { slug });
     await event.save();
 
     return successResponse(event, "Event updated successfully");
@@ -87,7 +92,9 @@ export async function PATCH(
     const { id } = await params;
 
     const body = await request.json();
-    const event = await Event.findByIdAndUpdate(id, body, { new: true });
+    // The agenda editor saves through PATCH, so this is the main path that has
+    // to land sessions in chronological order.
+    const event = await Event.findByIdAndUpdate(id, cleanEventAgendas(body), { new: true });
 
     if (!event || event.isDeleted) {
       return errorResponse("Event not found", 404);

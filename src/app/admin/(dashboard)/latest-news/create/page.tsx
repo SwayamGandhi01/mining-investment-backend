@@ -10,12 +10,13 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { TextField } from "@/components/forms/TextField";
 import { TextareaField } from "@/components/forms/TextareaField";
-import { RichTextField } from "@/components/forms/RichTextField";
+import { RichTextEditorField } from "@/components/forms/RichTextEditorField";
 import { SelectField } from "@/components/forms/SelectField";
 import { ToggleField } from "@/components/forms/ToggleField";
 import { ImageUploadField } from "@/components/forms/ImageUploadField";
 import { PdfUploadField } from "@/components/forms/PdfUploadField";
 import { latestNewsSchema, LatestNewsInput } from "@/lib/validations/latestNews";
+import { newsCategoryOptions, DEFAULT_NEWS_CATEGORY } from "@/lib/newsCategories";
 
 export default function CreateLatestNewsPage() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function CreateLatestNewsPage() {
       subheading: "",
       content: "",
       date: "",
-      category: "Latest News",
+      category: DEFAULT_NEWS_CATEGORY,
       status: "published",
       isFeatured: false,
     },
@@ -59,7 +60,7 @@ export default function CreateLatestNewsPage() {
           <ArrowLeft size={18} />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Add Latest News</h1>
+          <h1 className="text-2xl font-bold text-foreground">Add News</h1>
           <p className="text-sm text-muted mt-0.5">
             Publish a latest news item for the website frontend.
           </p>
@@ -88,10 +89,11 @@ export default function CreateLatestNewsPage() {
               label="Display Date"
               placeholder="e.g. JUL 5, 2026"
             />
-            <RichTextField
+            <RichTextEditorField
               name="content"
               label="Full Content"
-              placeholder="Write the full news story copy here..."
+              placeholder="Write or paste the full news story here…"
+              helperText="Paste directly from Word, Google Docs or a webpage — formatting, links and lists are preserved."
             />
           </div>
 
@@ -108,11 +110,10 @@ export default function CreateLatestNewsPage() {
               placeholder="Upload a PDF or enter a PDF URL"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <TextField
+              <SelectField
                 name="category"
-                label="Category"
-                required
-                placeholder="Latest News"
+                label="News Category"
+                options={newsCategoryOptions()}
               />
               <SelectField
                 name="status"
@@ -157,7 +158,7 @@ export default function CreateLatestNewsPage() {
               ) : (
                 <Save size={18} />
               )}
-              Publish Latest News
+              Publish News
             </button>
           </div>
         </form>

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { imageSchema, seoFieldsSchema } from "@/lib/validators";
+import { pruneAgendaDays, type AgendaDay } from "@/lib/agenda";
 
 const eventAgendaItemSchema = z.object({
   time: z.string().min(1, "Time is required"),
@@ -15,6 +16,16 @@ const eventAgendaDaySchema = z.object({
   items: z.array(eventAgendaItemSchema).default([]),
 });
 
+/**
+ * Untouched days and sessions are dropped before the rules below are applied, so
+ * the create form's blank starter row never blocks a save. A session the admin
+ * did start filling in is still held to the required time/title rules.
+ */
+const eventAgendaSchema = z.preprocess(
+  (value) => (Array.isArray(value) ? pruneAgendaDays(value as AgendaDay[]) : value),
+  z.array(eventAgendaDaySchema)
+);
+
 export const eventSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),
   description: z.string().min(1, "Description is required"),
@@ -28,13 +39,12 @@ export const eventSchema = z.object({
   gallery: z.array(imageSchema).optional(),
   speakers: z.array(z.string()).optional(),
   sponsors: z.array(z.string()).optional(),
-  exhibitors: z.array(z.string()).optional(),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
   isFeatured: z.boolean().default(false),
   registrationLink: z.string().url().optional().or(z.literal("")),
   maxAttendees: z.coerce.number().optional(),
-  agenda: z.array(eventAgendaDaySchema).optional(),
-  interactiveAgenda: z.array(eventAgendaDaySchema).optional(),
+  agenda: eventAgendaSchema.optional(),
+  interactiveAgenda: eventAgendaSchema.optional(),
 }).merge(seoFieldsSchema);
 
 export type EventInput = z.infer<typeof eventSchema>;

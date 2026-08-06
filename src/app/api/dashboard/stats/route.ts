@@ -7,7 +7,6 @@ import Registration from "@/models/Registration";
 import Company from "@/models/Company";
 import Blog from "@/models/Blog";
 import Brochure from "@/models/Brochure";
-import Exhibitor from "@/models/Exhibitor";
 import Agenda from "@/models/Agenda";
 import Gallery from "@/models/Gallery";
 import User from "@/models/User";
@@ -30,7 +29,6 @@ export async function GET(request: NextRequest) {
       companiesCount,
       blogsCount,
       brochuresCount,
-      exhibitorsCount,
       agendasCount,
       galleryCount,
       usersCount,
@@ -47,7 +45,6 @@ export async function GET(request: NextRequest) {
       Company.countDocuments(notDeleted),
       Blog.countDocuments(notDeleted),
       Brochure.countDocuments(notDeleted),
-      Exhibitor.countDocuments(notDeleted),
       Agenda.countDocuments(notDeleted),
       Gallery.countDocuments(notDeleted),
       User.countDocuments(notDeleted),
@@ -75,7 +72,6 @@ export async function GET(request: NextRequest) {
         companies: companiesCount,
         blogs: blogsCount,
         brochures: brochuresCount,
-        exhibitors: exhibitorsCount,
         agendas: agendasCount,
         gallery: galleryCount,
         users: usersCount,

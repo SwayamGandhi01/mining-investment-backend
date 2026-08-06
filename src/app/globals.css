@@ -100,6 +100,84 @@ body {
   background: #374151;
 }
 
+/* ---------------------------------------------------------------------------
+   CKEditor 5 (RichTextEditorField)
+   CKEditor ships a light theme only, so its design tokens are remapped onto the
+   admin panel's own variables. Both themes stay readable without forking its CSS.
+   --------------------------------------------------------------------------- */
+.ck-field .ck.ck-editor__main > .ck-editor__editable {
+  min-height: 18rem;
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.ck-field .ck.ck-toolbar,
+.ck-field .ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
+  background: var(--card-hover);
+  border-color: var(--border);
+}
+
+.ck-field .ck.ck-editor__editable,
+.ck-field .ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
+  border-color: var(--border);
+}
+
+.ck-field .ck.ck-editor__editable.ck-focused {
+  border-color: var(--color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.25);
+}
+
+.ck-field-error .ck.ck-editor__editable,
+.ck-field-error .ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
+  border-color: #ef4444;
+}
+
+/* CKEditor's own palette, pointed at the panel's tokens. */
+.dark .ck-field {
+  --ck-color-base-background: var(--card);
+  --ck-color-base-foreground: var(--card-hover);
+  --ck-color-base-border: var(--border);
+  --ck-color-base-text: var(--foreground);
+  --ck-color-text: var(--foreground);
+  --ck-color-toolbar-background: var(--card-hover);
+  --ck-color-toolbar-border: var(--border);
+  --ck-color-button-default-background: transparent;
+  --ck-color-button-default-hover-background: var(--border);
+  --ck-color-button-default-active-background: var(--border);
+  --ck-color-button-on-background: var(--border);
+  --ck-color-button-on-hover-background: var(--border);
+  --ck-color-button-on-color: var(--foreground);
+  --ck-color-panel-background: var(--card);
+  --ck-color-panel-border: var(--border);
+  --ck-color-dropdown-panel-background: var(--card);
+  --ck-color-dropdown-panel-border: var(--border);
+  --ck-color-list-background: var(--card);
+  --ck-color-list-button-hover-background: var(--card-hover);
+  --ck-color-input-background: var(--card);
+  --ck-color-input-border: var(--border);
+  --ck-color-input-text: var(--foreground);
+  --ck-color-labeled-field-label-background: var(--card);
+  --ck-color-split-button-hover-background: var(--border);
+  --ck-color-block-quote-border: var(--border);
+}
+
+/* The editor renders pasted markup as-is; keep block spacing sane inside it. */
+.ck-field .ck-content h2,
+.ck-field .ck-content h3,
+.ck-field .ck-content h4 {
+  color: var(--foreground);
+}
+
+.ck-field .ck-content blockquote {
+  border-left: 4px solid var(--border);
+  color: var(--muted);
+}
+
+.ck-field .ck-content a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
 /* Animation utilities */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }

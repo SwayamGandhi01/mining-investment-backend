@@ -18,7 +18,6 @@ import {
   ClipboardList,
   UserCircle,
   Settings,
-  Store,
   X,
   ChevronLeft,
   UserCheck,
@@ -26,6 +25,7 @@ import {
   Zap,
   BookOpen,
   GraduationCap,
+  Mail,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -37,22 +37,22 @@ interface SidebarProps {
 
 const navItems = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Events", href: "/admin/events", icon: Calendar },
+  { label: "Agenda Interactive Schedule", href: "/admin/events", icon: Calendar },
   { label: "Brochures", href: "/admin/brochures", icon: FileText },
-  { label: "Agendas", href: "/admin/agendas", icon: Clock },
+  { label: "Agenda", href: "/admin/agendas", icon: Clock },
   { label: "Speakers", href: "/admin/speakers", icon: Users },
   { label: "Sponsors", href: "/admin/sponsors", icon: Handshake },
-  { label: "Exhibitors", href: "/admin/exhibitors", icon: Store },
-  { label: "Companies", href: "/admin/companies", icon: Building2 },
+  { label: "Participating Companies", href: "/admin/companies", icon: Building2 },
   { label: "Articles", href: "/admin/articles", icon: BookOpen },
   { label: "Blogs", href: "/admin/blogs", icon: Newspaper },
   { label: "Newsflash", href: "/admin/newsflash", icon: Zap },
-  { label: "Latest News", href: "/admin/latest-news", icon: Newspaper },
+  { label: "The News", href: "/admin/latest-news", icon: Newspaper },
   { label: "Gallery", href: "/admin/gallery", icon: ImageIcon },
   { label: "Registrations", href: "/admin/registrations", icon: ClipboardList },
   { label: "Investor Registrations", href: "/admin/investor-registrations", icon: UserCheck },
   { label: "Company Registrations", href: "/admin/company-registrations", icon: Building },
   { label: "Student Sponsorships", href: "/admin/student-sponsorships", icon: GraduationCap },
+  { label: "Subscribers", href: "/admin/subscribers", icon: Mail },
   { label: "Users", href: "/admin/users", icon: UserCircle },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];

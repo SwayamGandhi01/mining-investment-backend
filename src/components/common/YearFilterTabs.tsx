@@ -4,6 +4,26 @@ import React from "react";
 import { Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/** How many upcoming editions the filter offers. */
+const FUTURE_EDITION_COUNT = 5;
+
+/**
+ * Read once at module load rather than during render — keeps the component pure,
+ * and a year rolling over mid-session is not worth re-rendering for.
+ */
+const CURRENT_YEAR = new Date().getFullYear();
+
+/**
+ * Editions run forward from the current year. Past years are deliberately not
+ * offered: the filter is for upcoming events. Records stored against an earlier
+ * year are still reachable through "All Years".
+ */
+export function futureEditionYears(count: number = FUTURE_EDITION_COUNT): number[] {
+  return Array.from({ length: count }, (_, index) => CURRENT_YEAR + 1 + index);
+}
+
+const DEFAULT_EDITION_YEARS = futureEditionYears();
+
 interface YearFilterTabsProps {
   selectedYear: string;
   onYearChange: (year: string) => void;
@@ -16,7 +36,7 @@ interface YearFilterTabsProps {
 export default function YearFilterTabs({
   selectedYear,
   onYearChange,
-  years = [2027, 2028, 2026, 2025, 2024],
+  years = DEFAULT_EDITION_YEARS,
   labelPrefix = "Edition",
   showAllOption = true,
   className,

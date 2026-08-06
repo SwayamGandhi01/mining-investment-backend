@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { imageSchema, seoFieldsSchema } from "@/lib/validators";
+import { DEFAULT_NEWS_CATEGORY } from "@/lib/newsCategories";
 
 export const latestNewsPdfAttachmentSchema = z.object({
   url: z.string().min(1, "Invalid PDF URL").or(z.literal("")).optional(),
@@ -13,7 +14,7 @@ export const latestNewsSchema = z
     subheading: z.string().optional().default(""),
     content: z.string().optional().default(""),
     date: z.string().optional().default(""),
-    category: z.string().default("Latest News"),
+    category: z.string().min(1, "Category is required").default(DEFAULT_NEWS_CATEGORY),
     image: imageSchema.optional(),
     pdfAttachment: latestNewsPdfAttachmentSchema.optional(),
     status: z.enum(["draft", "published", "archived"]).default("published"),

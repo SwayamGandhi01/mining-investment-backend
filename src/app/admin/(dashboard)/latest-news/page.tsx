@@ -155,10 +155,10 @@ export default function AdminLatestNewsPage() {
         <div>
           <div className="flex items-center gap-2">
             <Newspaper size={22} className="text-sky-500" />
-            <h1 className="text-2xl font-bold text-foreground">Latest News</h1>
+            <h1 className="text-2xl font-bold text-foreground">The News</h1>
           </div>
           <p className="text-sm text-muted mt-0.5">
-            Manage the latest news posts that appear on the website frontend.
+            Manage the news posts that appear on the website frontend.
           </p>
         </div>
         <Link
@@ -166,7 +166,7 @@ export default function AdminLatestNewsPage() {
           className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm rounded-lg shadow-sm transition-colors"
         >
           <Plus size={18} />
-          Add Latest News
+          Add News
         </Link>
       </div>
 
@@ -208,7 +208,7 @@ export default function AdminLatestNewsPage() {
 
       <ConfirmDialog
         isOpen={Boolean(deleteId)}
-        title="Delete Latest News"
+        title="Delete News"
         message="Are you sure you want to delete this latest news item?"
         loading={deleting}
         onConfirm={handleDelete}
@@ -217,7 +217,7 @@ export default function AdminLatestNewsPage() {
 
       <ConfirmDialog
         isOpen={bulkIds.length > 0}
-        title="Delete Multiple Latest News Items"
+        title="Delete Multiple News Items"
         message={`Are you sure you want to delete ${bulkIds.length} selected items?`}
         loading={deleting}
         onConfirm={async () => {

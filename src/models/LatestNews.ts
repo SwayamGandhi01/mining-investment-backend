@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { DEFAULT_NEWS_CATEGORY } from "@/lib/newsCategories";
 
 export interface ILatestNews extends Document {
   title: string;
@@ -28,7 +29,10 @@ const LatestNewsSchema = new Schema<ILatestNews>(
     subheading: { type: String, default: "", trim: true },
     content: { type: String, required: true },
     date: { type: String, default: "" },
-    category: { type: String, required: true, default: "Latest News" },
+    // Free string rather than an enum so existing items keep their category and
+    // adding a section does not need a migration. The selectable list lives in
+    // src/lib/newsCategories.ts.
+    category: { type: String, required: true, default: DEFAULT_NEWS_CATEGORY },
     image: { url: String, publicId: String },
     pdfAttachment: { url: String, publicId: String, name: String },
     publishedAt: { type: Date, default: Date.now },

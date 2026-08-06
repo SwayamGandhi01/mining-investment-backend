@@ -7,6 +7,7 @@ import { successResponse, paginatedResponse, errorResponse, handleApiError } fro
 import { eventSchema } from "@/lib/validations/event";
 import { formatZodErrors } from "@/lib/validators";
 import { requireAuth } from "@/lib/auth";
+import { sortAgendaDays, pruneAgendaDays, sortEventAgendas } from "@/lib/agenda";
 
 const normalizeEventPayload = (input: Record<string, any>) => {
   const normalized = { ...input };
@@ -19,8 +20,11 @@ const normalizeEventPayload = (input: Record<string, any>) => {
         : [];
 
   if (agendaGroups.length > 0) {
-    normalized.agenda = agendaGroups;
-    normalized.interactiveAgenda = agendaGroups;
+    // Drop the create form's untouched placeholder rows, then store sessions in
+    // chronological order so every consumer reads them sorted.
+    const cleaned = sortAgendaDays(pruneAgendaDays(agendaGroups));
+    normalized.agenda = cleaned;
+    normalized.interactiveAgenda = cleaned;
   }
 
   return normalized;
@@ -39,7 +43,9 @@ export async function GET(request: NextRequest) {
       Event.countDocuments(filter),
     ]);
 
-    return paginatedResponse(data, total, params.page, params.limit);
+    // Sort on read too, so events saved before this was introduced still come
+    // back chronologically without needing a migration.
+    return paginatedResponse(data.map(sortEventAgendas), total, params.page, params.limit);
   } catch (error) {
     return handleApiError(error);
   }

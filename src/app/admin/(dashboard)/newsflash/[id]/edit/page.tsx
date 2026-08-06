@@ -10,7 +10,7 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { TextField } from "@/components/forms/TextField";
 import { TextareaField } from "@/components/forms/TextareaField";
-import { RichTextField } from "@/components/forms/RichTextField";
+import { RichTextEditorField } from "@/components/forms/RichTextEditorField";
 import { SelectField } from "@/components/forms/SelectField";
 import { ToggleField } from "@/components/forms/ToggleField";
 import { ImageUploadField } from "@/components/forms/ImageUploadField";
@@ -93,7 +93,11 @@ export default function EditNewsflashPage({
             <TextField name="title" label="Headline / Title" required />
             <TextareaField name="subheading" label="Subheading / Excerpt" />
             <TextField name="date" label="Display Date Tag" placeholder="e.g. JUL 5, 2026" />
-            <RichTextField name="content" label="Full Press Release Body" />
+            <RichTextEditorField
+              name="content"
+              label="Full Press Release Body"
+              helperText="Paste directly from Word, Google Docs or a webpage — formatting, links and lists are preserved."
+            />
           </div>
 
           <div className="bg-card border border-border rounded-xl p-6 space-y-4">

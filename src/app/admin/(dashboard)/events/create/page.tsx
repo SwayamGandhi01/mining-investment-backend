@@ -15,6 +15,7 @@ import { DatePickerField } from "@/components/forms/DatePickerField";
 import { SelectField } from "@/components/forms/SelectField";
 import { ToggleField } from "@/components/forms/ToggleField";
 import { ImageUploadField } from "@/components/forms/ImageUploadField";
+import InteractiveAgendaEditor, { emptyAgendaDay } from "@/components/admin/InteractiveAgendaEditor";
 import { eventSchema, EventInput } from "@/lib/validations/event";
 
 export default function CreateEventPage() {
@@ -36,6 +37,10 @@ export default function CreateEventPage() {
       isFeatured: false,
       registrationLink: "",
       maxAttendees: 100,
+      agenda: [],
+      // Start with one day and one session so the agenda builder is ready to fill
+      // in. Untouched placeholder rows are stripped before saving.
+      interactiveAgenda: [emptyAgendaDay()],
     },
   });
 
@@ -114,6 +119,8 @@ export default function CreateEventPage() {
             <TextField name="registrationLink" label="External Registration Link (Optional)" placeholder="https://..." />
             <ToggleField name="isFeatured" label="Featured Event" helperText="Show this event in featured sections" />
           </div>
+
+          <InteractiveAgendaEditor />
 
           <div className="bg-card border border-border rounded-xl p-6 space-y-4">
             <h2 className="text-base font-semibold text-foreground border-b border-border pb-2">

@@ -14,7 +14,6 @@ export interface IEvent extends Document {
   gallery?: { url: string; publicId: string }[];
   speakers?: mongoose.Types.ObjectId[];
   sponsors?: mongoose.Types.ObjectId[];
-  exhibitors?: mongoose.Types.ObjectId[];
   status: "draft" | "published" | "archived";
   isFeatured: boolean;
   registrationLink?: string;
@@ -64,7 +63,6 @@ const EventSchema = new Schema<IEvent>(
     gallery: [{ url: String, publicId: String }],
     speakers: [{ type: Schema.Types.ObjectId, ref: "Speaker" }],
     sponsors: [{ type: Schema.Types.ObjectId, ref: "Sponsor" }],
-    exhibitors: [{ type: Schema.Types.ObjectId, ref: "Exhibitor" }],
     status: {
       type: String,
       enum: ["draft", "published", "archived"],

@@ -14,7 +14,6 @@ import {
   FileText,
   Clock,
   Image as ImageIcon,
-  Store,
   UserCircle,
   RefreshCw,
   Plus,
@@ -81,7 +80,7 @@ export default function DashboardPage() {
 
         setStats([
           {
-            label: "Total Events",
+            label: "Agenda Interactive Schedule",
             value: counts.events || 0,
             icon: Calendar,
             color: "text-blue-600 dark:text-blue-400",
@@ -129,15 +128,7 @@ export default function DashboardPage() {
             href: "/admin/sponsors",
           },
           {
-            label: "Exhibitors",
-            value: counts.exhibitors || 0,
-            icon: Store,
-            color: "text-orange-600 dark:text-orange-400",
-            bgColor: "bg-orange-50 dark:bg-orange-500/10",
-            href: "/admin/exhibitors",
-          },
-          {
-            label: "Companies",
+            label: "Participating Companies",
             value: counts.companies || 0,
             icon: Building2,
             color: "text-indigo-600 dark:text-indigo-400",
@@ -153,7 +144,7 @@ export default function DashboardPage() {
             href: "/admin/brochures",
           },
           {
-            label: "Agendas",
+            label: "Agenda",
             value: counts.agendas || 0,
             icon: Clock,
             color: "text-teal-600 dark:text-teal-400",
@@ -214,7 +205,6 @@ export default function DashboardPage() {
         axios.get("/api/company-registrations?limit=1"),
         axios.get("/api/speakers?limit=1"),
         axios.get("/api/sponsors?limit=1"),
-        axios.get("/api/exhibitors?limit=1"),
         axios.get("/api/companies?limit=1"),
         axios.get("/api/brochures?limit=1"),
         axios.get("/api/agendas?limit=1"),
@@ -230,7 +220,7 @@ export default function DashboardPage() {
 
       setStats([
         {
-          label: "Total Events",
+          label: "Agenda Interactive Schedule",
           value: getTotal(results[0]),
           icon: Calendar,
           color: "text-blue-600 dark:text-blue-400",
@@ -278,16 +268,8 @@ export default function DashboardPage() {
           href: "/admin/sponsors",
         },
         {
-          label: "Exhibitors",
+          label: "Participating Companies",
           value: getTotal(results[6]),
-          icon: Store,
-          color: "text-orange-600 dark:text-orange-400",
-          bgColor: "bg-orange-50 dark:bg-orange-500/10",
-          href: "/admin/exhibitors",
-        },
-        {
-          label: "Companies",
-          value: getTotal(results[7]),
           icon: Building2,
           color: "text-indigo-600 dark:text-indigo-400",
           bgColor: "bg-indigo-50 dark:bg-indigo-500/10",
@@ -295,15 +277,15 @@ export default function DashboardPage() {
         },
         {
           label: "Brochures",
-          value: getTotal(results[8]),
+          value: getTotal(results[7]),
           icon: FileText,
           color: "text-cyan-600 dark:text-cyan-400",
           bgColor: "bg-cyan-50 dark:bg-cyan-500/10",
           href: "/admin/brochures",
         },
         {
-          label: "Agendas",
-          value: getTotal(results[9]),
+          label: "Agenda",
+          value: getTotal(results[8]),
           icon: Clock,
           color: "text-teal-600 dark:text-teal-400",
           bgColor: "bg-teal-50 dark:bg-teal-500/10",
@@ -311,7 +293,7 @@ export default function DashboardPage() {
         },
         {
           label: "Blog Posts",
-          value: getTotal(results[10]),
+          value: getTotal(results[9]),
           icon: Newspaper,
           color: "text-pink-600 dark:text-pink-400",
           bgColor: "bg-pink-50 dark:bg-pink-500/10",
@@ -319,7 +301,7 @@ export default function DashboardPage() {
         },
         {
           label: "Gallery Media",
-          value: getTotal(results[11]),
+          value: getTotal(results[10]),
           icon: ImageIcon,
           color: "text-rose-600 dark:text-rose-400",
           bgColor: "bg-rose-50 dark:bg-rose-500/10",
@@ -327,7 +309,7 @@ export default function DashboardPage() {
         },
         {
           label: "Registered Users",
-          value: getTotal(results[12]),
+          value: getTotal(results[11]),
           icon: UserCircle,
           color: "text-violet-600 dark:text-violet-400",
           bgColor: "bg-violet-50 dark:bg-violet-500/10",

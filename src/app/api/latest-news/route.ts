@@ -31,6 +31,12 @@ export async function GET(request: NextRequest) {
       params,
       buildSearchQuery(params.search, ["title", "subheading", "content", "category"])
     );
+
+    // ?category=Mining%20News — lets the website fetch one section at a time.
+    const category = request.nextUrl.searchParams.get("category");
+    if (category && category !== "all") {
+      filter.category = category;
+    }
     const sort = buildSortQuery(params);
     const skip = getSkip(params.page, params.limit);
 

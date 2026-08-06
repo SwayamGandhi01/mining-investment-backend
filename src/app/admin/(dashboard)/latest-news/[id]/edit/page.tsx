@@ -10,12 +10,13 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { TextField } from "@/components/forms/TextField";
 import { TextareaField } from "@/components/forms/TextareaField";
-import { RichTextField } from "@/components/forms/RichTextField";
+import { RichTextEditorField } from "@/components/forms/RichTextEditorField";
 import { SelectField } from "@/components/forms/SelectField";
 import { ToggleField } from "@/components/forms/ToggleField";
 import { ImageUploadField } from "@/components/forms/ImageUploadField";
 import { PdfUploadField } from "@/components/forms/PdfUploadField";
 import { latestNewsSchema, LatestNewsInput } from "@/lib/validations/latestNews";
+import { newsCategoryOptions } from "@/lib/newsCategories";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -49,6 +50,10 @@ export default function EditLatestNewsPage({ params }: PageProps) {
     loadItem();
   }, [id, methods]);
 
+  // Keeps an older item's category (e.g. "Latest News") in the dropdown, so
+  // opening it for editing does not silently retag it.
+  const currentCategory = methods.watch("category");
+
   const onSubmit = async (data: LatestNewsInput) => {
     setSubmitting(true);
     try {
@@ -74,7 +79,7 @@ export default function EditLatestNewsPage({ params }: PageProps) {
           <ArrowLeft size={18} />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Edit Latest News</h1>
+          <h1 className="text-2xl font-bold text-foreground">Edit News</h1>
           <p className="text-sm text-muted mt-0.5">
             Update the latest news item for the frontend section.
           </p>
@@ -90,7 +95,11 @@ export default function EditLatestNewsPage({ params }: PageProps) {
             <TextField name="title" label="Headline / Title" required />
             <TextareaField name="subheading" label="Subheading / Excerpt" />
             <TextField name="date" label="Display Date" />
-            <RichTextField name="content" label="Full Content" />
+            <RichTextEditorField
+              name="content"
+              label="Full Content"
+              helperText="Paste directly from Word, Google Docs or a webpage — formatting, links and lists are preserved."
+            />
           </div>
 
           <div className="bg-card border border-border rounded-xl p-6 space-y-4">
@@ -106,7 +115,11 @@ export default function EditLatestNewsPage({ params }: PageProps) {
               placeholder="Upload a PDF or enter a PDF URL"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <TextField name="category" label="Category" required />
+              <SelectField
+                name="category"
+                label="News Category"
+                options={newsCategoryOptions(currentCategory)}
+              />
               <SelectField
                 name="status"
                 label="Publish Status"

@@ -10,7 +10,7 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { TextField } from "@/components/forms/TextField";
 import { TextareaField } from "@/components/forms/TextareaField";
-import { RichTextField } from "@/components/forms/RichTextField";
+import { RichTextEditorField } from "@/components/forms/RichTextEditorField";
 import { SelectField } from "@/components/forms/SelectField";
 import { ToggleField } from "@/components/forms/ToggleField";
 import { ImageUploadField } from "@/components/forms/ImageUploadField";
@@ -89,10 +89,11 @@ export default function CreateNewsflashPage() {
               label="Display Date Tag"
               placeholder="e.g. JUL 5, 2026 or July 2026"
             />
-            <RichTextField
+            <RichTextEditorField
               name="content"
               label="Full Press Release Body"
-              placeholder="Write or paste full press release content with headings, paragraphs, bullet points, quotes..."
+              placeholder="Write or paste the full press release here…"
+              helperText="Paste directly from Word, Google Docs or a webpage — formatting, links and lists are preserved."
             />
           </div>
 

@@ -2,7 +2,6 @@ import dbConnect from "../src/lib/mongodb";
 import Event from "../src/models/Event";
 import Speaker from "../src/models/Speaker";
 import Sponsor from "../src/models/Sponsor";
-import Exhibitor from "../src/models/Exhibitor";
 import Company from "../src/models/Company";
 import Agenda from "../src/models/Agenda";
 import Brochure from "../src/models/Brochure";
@@ -83,25 +82,7 @@ async function seedFullBackend() {
   );
   console.log("✅ Sponsors created/updated");
 
-  // 3. Exhibitors
-  const exhibitor1 = await Exhibitor.findOneAndUpdate(
-    { slug: "atlas-mining-tech" },
-    {
-      name: "Atlas Mining Tech",
-      slug: "atlas-mining-tech",
-      description: "Autonomous drilling and AI-driven geological survey equipment.",
-      boothNumber: "A-102",
-      category: "Technology",
-      contactPerson: "David Miller",
-      contactEmail: "david@atlasminingtech.com",
-      status: "published",
-      isFeatured: true,
-    },
-    { upsert: true, new: true }
-  );
-  console.log("✅ Exhibitor created/updated");
-
-  // 4. Events
+  // 3. Events
   const event1 = await Event.findOneAndUpdate(
     { slug: "the-mining-investment-event-2026" },
     {
@@ -116,7 +97,6 @@ async function seedFullBackend() {
       venue: "Voltigeurs de Québec Armoury",
       speakers: [speaker1._id, speaker2._id],
       sponsors: [sponsor1._id, sponsor2._id],
-      exhibitors: [exhibitor1._id],
       status: "published",
       isFeatured: true,
     },
