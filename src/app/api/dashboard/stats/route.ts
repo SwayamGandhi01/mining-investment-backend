@@ -5,7 +5,6 @@ import Speaker from "@/models/Speaker";
 import Sponsor from "@/models/Sponsor";
 import Registration from "@/models/Registration";
 import Company from "@/models/Company";
-import Blog from "@/models/Blog";
 import Brochure from "@/models/Brochure";
 import Agenda from "@/models/Agenda";
 import Gallery from "@/models/Gallery";
@@ -27,7 +26,6 @@ export async function GET(request: NextRequest) {
       sponsorsCount,
       registrationsCount,
       companiesCount,
-      blogsCount,
       brochuresCount,
       agendasCount,
       galleryCount,
@@ -43,7 +41,6 @@ export async function GET(request: NextRequest) {
       Sponsor.countDocuments(notDeleted),
       Registration.countDocuments(notDeleted),
       Company.countDocuments(notDeleted),
-      Blog.countDocuments(notDeleted),
       Brochure.countDocuments(notDeleted),
       Agenda.countDocuments(notDeleted),
       Gallery.countDocuments(notDeleted),
@@ -70,7 +67,6 @@ export async function GET(request: NextRequest) {
         sponsors: sponsorsCount,
         registrations: registrationsCount,
         companies: companiesCount,
-        blogs: blogsCount,
         brochures: brochuresCount,
         agendas: agendasCount,
         gallery: galleryCount,

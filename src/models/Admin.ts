@@ -5,6 +5,15 @@ export interface IAdmin extends Document {
   email: string;
   password: string;
   role: "superadmin" | "admin" | "editor";
+  /**
+   * Self-signups land as "pending" and cannot log in until a superadmin
+   * approves them. Accounts created before this existed have no status field,
+   * which is treated as approved everywhere.
+   */
+  status: "pending" | "approved" | "rejected";
+  approvedBy?: mongoose.Types.ObjectId;
+  approvedAt?: Date;
+  reviewNote?: string;
   avatar?: string;
   avatarPublicId?: string;
   isActive: boolean;
@@ -43,6 +52,26 @@ const AdminSchema = new Schema<IAdmin>(
       },
       default: "admin",
     },
+    status: {
+      type: String,
+      enum: {
+        values: ["pending", "approved", "rejected"],
+        message: "{VALUE} is not a valid status",
+      },
+      default: "approved",
+    },
+    approvedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "Admin",
+    },
+    approvedAt: {
+      type: Date,
+    },
+    reviewNote: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     avatar: {
       type: String,
       default: "",
@@ -75,6 +104,7 @@ const AdminSchema = new Schema<IAdmin>(
 // Index for faster lookups
 AdminSchema.index({ email: 1 });
 AdminSchema.index({ role: 1 });
+AdminSchema.index({ status: 1 });
 
 const Admin: Model<IAdmin> =
   mongoose.models.Admin || mongoose.model<IAdmin>("Admin", AdminSchema);

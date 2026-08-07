@@ -26,11 +26,23 @@ export async function GET(request: NextRequest) {
         "description",
       ])
     );
-    const sort = buildSortQuery(params);
+    // Participating companies read as a directory, so they default to A–Z.
+    // An explicit ?sort= still wins, which is what the admin table's column
+    // headers use.
+    const sortRequested = request.nextUrl.searchParams.has("sort");
+    const sort = sortRequested ? buildSortQuery(params) : { name: 1 as const };
     const skip = getSkip(params.page, params.limit);
 
     const [data, total] = await Promise.all([
-      Company.find(filter).sort(sort).skip(skip).limit(params.limit).lean(),
+      Company.find(filter)
+        // Without a collation, binary ordering puts every capitalised name
+        // ahead of every lowercase one ("Zinc Corp" before "apex mining").
+        // strength 2 makes the sort case-insensitive.
+        .collation({ locale: "en", strength: 2 })
+        .sort(sort)
+        .skip(skip)
+        .limit(params.limit)
+        .lean(),
       Company.countDocuments(filter),
     ]);
 

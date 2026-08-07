@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Mail, User, CalendarDays, Trash2 } from "lucide-react";
 import DataTable, { Column } from "@/components/tables/DataTable";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 import { formatDate } from "@/lib/utils";
 
 interface SubscriberItem {
@@ -113,11 +114,20 @@ export default function AdminSubscribersPage() {
             Newsletter sign-ups collected from the public website
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-primary-500/10 border border-primary-500/20 rounded-lg">
-          <Mail size={16} className="text-primary-500" />
-          <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
-            {total} Total
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 bg-primary-500/10 border border-primary-500/20 rounded-lg">
+            <Mail size={16} className="text-primary-500" />
+            <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
+              {total} Total
+            </span>
+          </div>
+          <ExportCsvButton
+            endpoint="/api/subscribers/export"
+            search={search}
+            sort={sort}
+            order={order}
+            total={total}
+          />
         </div>
       </div>
 

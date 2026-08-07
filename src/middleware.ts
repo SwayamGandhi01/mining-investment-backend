@@ -6,6 +6,9 @@ const publicRoutes = [
   "/admin/login",
   "/api/auth/login",
   "/api/auth/seed",
+  // Self-signup is public, but it only ever creates a pending request that a
+  // superadmin must approve — see src/app/api/auth/signup/route.ts.
+  "/api/auth/signup",
 ];
 
 // Routes that should be accessible without auth (public API endpoints — GET only)
@@ -14,7 +17,6 @@ const publicApiPrefixes = [
   "/api/speakers",
   "/api/sponsors",
   "/api/companies",
-  "/api/blogs",
   "/api/gallery",
   "/api/newsflash",
   "/api/latest-news",

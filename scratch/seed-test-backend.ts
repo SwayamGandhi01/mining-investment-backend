@@ -5,7 +5,6 @@ import Sponsor from "../src/models/Sponsor";
 import Company from "../src/models/Company";
 import Agenda from "../src/models/Agenda";
 import Brochure from "../src/models/Brochure";
-import Blog from "../src/models/Blog";
 import Newsflash from "../src/models/Newsflash";
 import Gallery from "../src/models/Gallery";
 import Registration from "../src/models/Registration";
@@ -169,23 +168,7 @@ async function seedFullBackend() {
   );
   console.log("✅ Brochure created/updated");
 
-  // 8. Blogs
-  await Blog.findOneAndUpdate(
-    { slug: "top-critical-mineral-investment-trends-2026" },
-    {
-      title: "Top Critical Mineral Investment Trends for 2026",
-      slug: "top-critical-mineral-investment-trends-2026",
-      excerpt: "An analysis of lithium, nickel, and copper demand driven by energy transition mandates.",
-      content: "<h3>Executive Summary</h3><p>Demand for lithium and copper continues to accelerate...</p>",
-      category: "Market Insights",
-      status: "published",
-      isFeatured: true,
-    },
-    { upsert: true, new: true }
-  );
-  console.log("✅ Blog created/updated");
-
-  // 9. Newsflash
+  // 8. Newsflash
   await Newsflash.findOneAndUpdate(
     { slug: "the-mining-investment-event-announces-winners-2026" },
     {
@@ -202,7 +185,7 @@ async function seedFullBackend() {
   );
   console.log("✅ Newsflash created/updated");
 
-  // 10. Gallery
+  // 9. Gallery
   await Gallery.findOneAndUpdate(
     { slug: "2025-opening-ceremony-highlights" },
     {
@@ -226,7 +209,7 @@ async function seedFullBackend() {
   );
   console.log("✅ Gallery created/updated");
 
-  // 11. Registration (Attendee)
+  // 10. Registration (Attendee)
   await Registration.findOneAndUpdate(
     { email: "attendee.alex@example.com" },
     {
@@ -245,7 +228,7 @@ async function seedFullBackend() {
   );
   console.log("✅ Event Registration created/updated");
 
-  // 12. Investor Registration
+  // 11. Investor Registration
   await InvestorRegistration.findOneAndUpdate(
     { email: "investor.carol@vanguardfunds.com" },
     {
@@ -267,7 +250,7 @@ async function seedFullBackend() {
   );
   console.log("✅ Investor Registration created/updated");
 
-  // 13. Company Registration
+  // 12. Company Registration
   await CompanyRegistration.findOneAndUpdate(
     { email: "corporate@goldhorizon.com" },
     {
@@ -286,7 +269,7 @@ async function seedFullBackend() {
   );
   console.log("✅ Company Registration created/updated");
 
-  // 14. User / Subscriber
+  // 13. User / Subscriber
   await User.findOneAndUpdate(
     { email: "subscriber.mark@example.com" },
     {

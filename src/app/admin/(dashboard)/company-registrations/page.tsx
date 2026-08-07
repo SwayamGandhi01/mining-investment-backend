@@ -7,6 +7,7 @@ import { Mail, Hash, MapPin, Globe, TrendingUp, BarChart2, Gem } from "lucide-re
 import DataTable, { Column } from "@/components/tables/DataTable";
 import Badge from "@/components/common/Badge";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 interface CompanyRegistrationItem {
   _id: string;
@@ -203,11 +204,20 @@ export default function AdminCompanyRegistrationsPage() {
             View and manage company registration submissions from the public form
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-sky-500/10 border border-sky-500/20 rounded-lg">
-          <Globe size={16} className="text-sky-500" />
-          <span className="text-sm font-semibold text-sky-600 dark:text-sky-400">
-            {total} Total
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 bg-sky-500/10 border border-sky-500/20 rounded-lg">
+            <Globe size={16} className="text-sky-500" />
+            <span className="text-sm font-semibold text-sky-600 dark:text-sky-400">
+              {total} Total
+            </span>
+          </div>
+          <ExportCsvButton
+            endpoint="/api/company-registrations/export"
+            search={search}
+            sort={sort}
+            order={order}
+            total={total}
+          />
         </div>
       </div>
 

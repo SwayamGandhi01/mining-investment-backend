@@ -26,7 +26,9 @@ import {
   BookOpen,
   GraduationCap,
   Mail,
+  ShieldCheck,
 } from "lucide-react";
+import { useAuth } from "./AuthProvider";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -44,7 +46,6 @@ const navItems = [
   { label: "Sponsors", href: "/admin/sponsors", icon: Handshake },
   { label: "Participating Companies", href: "/admin/companies", icon: Building2 },
   { label: "Articles", href: "/admin/articles", icon: BookOpen },
-  { label: "Blogs", href: "/admin/blogs", icon: Newspaper },
   { label: "Newsflash", href: "/admin/newsflash", icon: Zap },
   { label: "The News", href: "/admin/latest-news", icon: Newspaper },
   { label: "Gallery", href: "/admin/gallery", icon: ImageIcon },
@@ -54,6 +55,14 @@ const navItems = [
   { label: "Student Sponsorships", href: "/admin/student-sponsorships", icon: GraduationCap },
   { label: "Subscribers", href: "/admin/subscribers", icon: Mail },
   { label: "Users", href: "/admin/users", icon: UserCircle },
+  // Reviewing admin signups is a superadmin-only power, so the entry is hidden
+  // for everyone else — the API enforces the same rule server-side.
+  {
+    label: "Admin Requests",
+    href: "/admin/admin-requests",
+    icon: ShieldCheck,
+    superadminOnly: true,
+  },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
@@ -64,6 +73,10 @@ export default function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const pathname = usePathname();
+  const { admin } = useAuth();
+  const visibleNavItems = navItems.filter(
+    (item) => !item.superadminOnly || admin?.role === "superadmin"
+  );
   const [siteName, setSiteName] = useState<string>("InvestmentAdmin");
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [faviconUrl, setFaviconUrl] = useState<string>("");
@@ -182,7 +195,7 @@ export default function Sidebar({
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== "/admin/dashboard" &&

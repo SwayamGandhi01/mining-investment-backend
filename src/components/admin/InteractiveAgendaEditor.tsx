@@ -212,9 +212,37 @@ export default function InteractiveAgendaEditor({
     return sorted;
   };
 
+  const addDayButton = (
+    <button
+      type="button"
+      onClick={() => daysFieldArray.append(emptyAgendaDay())}
+      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border border-border bg-card hover:bg-card-hover text-foreground transition-colors"
+    >
+      <Plus size={14} />
+      Add Day
+    </button>
+  );
+
+  const saveButton = onSave ? (
+    <button
+      type="button"
+      disabled={saving}
+      onClick={() => onSave(applySort())}
+      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-primary-600 hover:bg-primary-700 text-white transition-colors disabled:opacity-50"
+    >
+      {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+      {saving ? "Saving..." : "Save Agenda"}
+    </button>
+  ) : null;
+
   return (
     <div className="bg-card border border-border rounded-xl p-6 space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
+      {/*
+        The agenda grows thousands of pixels tall, so a save control only at the
+        top scrolls out of reach. The header sticks to the top of the scroll area
+        while the card is on screen, and the same actions repeat at the bottom.
+      */}
+      <div className="sticky top-0 z-10 -mx-6 -mt-6 px-6 pt-6 pb-3 bg-card rounded-t-xl border-b border-border flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-base font-semibold text-foreground">Interactive Agenda</h2>
           <p className="text-xs text-muted mt-0.5">
@@ -222,25 +250,8 @@ export default function InteractiveAgendaEditor({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => daysFieldArray.append(emptyAgendaDay())}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border border-border bg-card hover:bg-card-hover text-foreground transition-colors"
-          >
-            <Plus size={14} />
-            Add Day
-          </button>
-          {onSave && (
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() => onSave(applySort())}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-primary-600 hover:bg-primary-700 text-white transition-colors disabled:opacity-50"
-            >
-              {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-              {saving ? "Saving..." : "Save Agenda"}
-            </button>
-          )}
+          {addDayButton}
+          {saveButton}
         </div>
       </div>
 
@@ -258,6 +269,16 @@ export default function InteractiveAgendaEditor({
             removeDay={daysFieldArray.remove}
           />
         ))}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-end gap-2 border-t border-border pt-4">
+        {onSave && (
+          <p className="mr-auto text-xs text-muted">
+            Unsaved changes stay in the form until you save.
+          </p>
+        )}
+        {addDayButton}
+        {saveButton}
       </div>
 
       <AgendaPreview days={days} />

@@ -31,8 +31,8 @@ export default function AdminCompaniesPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [sort, setSort] = useState("createdAt");
-  const [order, setOrder] = useState<"asc" | "desc">("desc");
+  const [sort, setSort] = useState("name");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [search, setSearch] = useState("");
   const [year, setYear] = useState("2027");
 

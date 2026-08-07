@@ -64,6 +64,8 @@ const CompanySchema = new Schema<ICompany>(
 );
 
 CompanySchema.index({ slug: 1 });
+// Companies are listed alphabetically by default.
+CompanySchema.index({ name: 1 });
 CompanySchema.index({ year: 1, isDeleted: 1 });
 CompanySchema.index({ isDeleted: 1 });
 

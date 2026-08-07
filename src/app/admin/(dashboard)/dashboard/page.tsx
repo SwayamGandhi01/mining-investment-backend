@@ -6,7 +6,6 @@ import {
   Calendar,
   Users,
   Handshake,
-  Newspaper,
   ClipboardList,
   Building2,
   TrendingUp,
@@ -152,14 +151,6 @@ export default function DashboardPage() {
             href: "/admin/agendas",
           },
           {
-            label: "Blog Posts",
-            value: counts.blogs || 0,
-            icon: Newspaper,
-            color: "text-pink-600 dark:text-pink-400",
-            bgColor: "bg-pink-50 dark:bg-pink-500/10",
-            href: "/admin/blogs",
-          },
-          {
             label: "Newsflash",
             value: counts.newsflash || 0,
             icon: Zap,
@@ -208,7 +199,6 @@ export default function DashboardPage() {
         axios.get("/api/companies?limit=1"),
         axios.get("/api/brochures?limit=1"),
         axios.get("/api/agendas?limit=1"),
-        axios.get("/api/blogs?limit=1"),
         axios.get("/api/gallery?limit=1"),
         axios.get("/api/users?limit=1"),
       ]);
@@ -292,16 +282,8 @@ export default function DashboardPage() {
           href: "/admin/agendas",
         },
         {
-          label: "Blog Posts",
-          value: getTotal(results[9]),
-          icon: Newspaper,
-          color: "text-pink-600 dark:text-pink-400",
-          bgColor: "bg-pink-50 dark:bg-pink-500/10",
-          href: "/admin/blogs",
-        },
-        {
           label: "Gallery Media",
-          value: getTotal(results[10]),
+          value: getTotal(results[9]),
           icon: ImageIcon,
           color: "text-rose-600 dark:text-rose-400",
           bgColor: "bg-rose-50 dark:bg-rose-500/10",
@@ -309,7 +291,7 @@ export default function DashboardPage() {
         },
         {
           label: "Registered Users",
-          value: getTotal(results[11]),
+          value: getTotal(results[10]),
           icon: UserCircle,
           color: "text-violet-600 dark:text-violet-400",
           bgColor: "bg-violet-50 dark:bg-violet-500/10",
@@ -445,13 +427,6 @@ export default function DashboardPage() {
           >
             <FileText size={14} />
             <span>Manage Brochures</span>
-          </Link>
-          <Link
-            href="/admin/blogs"
-            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-pink-600 text-white hover:bg-pink-700 text-xs font-medium transition-colors"
-          >
-            <Newspaper size={14} />
-            <span>Manage Blog Posts</span>
           </Link>
         </div>
       </div>

@@ -11,10 +11,19 @@ import {
   BookOpen,
   Languages,
   Trash2,
+  FileText,
+  FileSignature,
 } from "lucide-react";
 import DataTable, { Column } from "@/components/tables/DataTable";
 import Badge from "@/components/common/Badge";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
+
+interface SponsorshipAttachment {
+  url: string;
+  publicId?: string;
+  fileName?: string;
+}
 
 interface StudentSponsorshipItem {
   _id: string;
@@ -27,6 +36,9 @@ interface StudentSponsorshipItem {
   phone: string;
   signUpForNews: boolean;
   language?: string;
+  resume?: SponsorshipAttachment;
+  letterOfInterest?: string;
+  letterOfInterestFile?: SponsorshipAttachment;
   status: "pending" | "confirmed" | "cancelled";
   createdAt: string;
 }
@@ -152,6 +164,56 @@ export default function AdminStudentSponsorshipsPage() {
       ),
     },
     {
+      header: "Documents",
+      accessorKey: "resume",
+      cell: (item) => {
+        // Linked through our own /file route rather than straight at the
+        // Cloudinary URL: raw assets are stored without an extension, so a
+        // direct link downloads an extensionless octet-stream that Windows
+        // cannot open. The proxy restores the original filename and type.
+        const links = [
+          { file: item.resume, icon: FileText, label: "Resume", type: "resume" },
+          { file: item.letterOfInterestFile, icon: FileSignature, label: "Letter", type: "letter" },
+        ].filter((l) => l.file?.url);
+
+        if (links.length === 0) {
+          return <span className="text-xs text-muted">—</span>;
+        }
+
+        return (
+          <div className="flex items-center gap-1.5">
+            {links.map(({ file, icon: Icon, label, type }) => (
+              <a
+                key={label}
+                href={`/api/student-sponsorships/${item._id}/file?type=${type}`}
+                title={`Download ${file!.fileName || label}`}
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded border border-border text-foreground hover:bg-card-hover transition-colors"
+              >
+                <Icon size={12} />
+                {label}
+              </a>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      header: "Letter of Interest",
+      accessorKey: "letterOfInterest",
+      cell: (item) =>
+        item.letterOfInterest ? (
+          // Full text on hover — the column would otherwise swallow the table.
+          <p
+            className="text-xs text-muted max-w-[220px] truncate"
+            title={item.letterOfInterest}
+          >
+            {item.letterOfInterest}
+          </p>
+        ) : (
+          <span className="text-xs text-muted">—</span>
+        ),
+    },
+    {
       header: "News",
       accessorKey: "signUpForNews",
       cell: (item) => (
@@ -185,11 +247,20 @@ export default function AdminStudentSponsorshipsPage() {
             Student Sponsorship Application submissions from the public form
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-          <GraduationCap size={16} className="text-amber-500" />
-          <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
-            {total} Total
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+            <GraduationCap size={16} className="text-amber-500" />
+            <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+              {total} Total
+            </span>
+          </div>
+          <ExportCsvButton
+            endpoint="/api/student-sponsorships/export"
+            search={search}
+            sort={sort}
+            order={order}
+            total={total}
+          />
         </div>
       </div>
 

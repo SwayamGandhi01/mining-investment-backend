@@ -3,7 +3,19 @@ import dbConnect from "@/lib/mongodb";
 import Admin from "@/models/Admin";
 import { hashPassword } from "@/lib/auth";
 import { successResponse, errorResponse, handleApiError } from "@/lib/response";
+import { APPROVED_FILTER } from "@/lib/adminApproval";
 
+/**
+ * POST /api/auth/signup
+ * Request an admin account — public.
+ *
+ * Self-signup never produces a usable account on its own: the record is created
+ * with status "pending" and isActive false, and a superadmin must approve it via
+ * PATCH /api/admin-requests/[id] before it can log in.
+ *
+ * The single exception is bootstrapping — if no approved admin exists yet, the
+ * first signup becomes an active superadmin so the panel is reachable at all.
+ */
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
@@ -20,42 +32,63 @@ export async function POST(request: NextRequest) {
     }
 
     const allowedRoles = ["superadmin", "admin", "editor"];
-    const selectedRole = role && allowedRoles.includes(role) ? role : "admin";
+    const requestedRole = role && allowedRoles.includes(role) ? role : "admin";
+    const normalizedEmail = String(email).toLowerCase().trim();
 
-    // If trying to register as superadmin, check that one doesn't already exist
-    if (selectedRole === "superadmin") {
-      const existingSuperAdmin = await Admin.findOne({ role: "superadmin" }).lean();
-      if (existingSuperAdmin) {
-        return errorResponse(
-          "A superadmin account already exists. Only one superadmin is allowed.",
-          409
-        );
-      }
-    }
-
-    // Check if email is already registered
-    const existingAdmin = await Admin.findOne({ email: email.toLowerCase().trim() }).lean();
+    const existingAdmin = await Admin.findOne({ email: normalizedEmail }).lean();
     if (existingAdmin) {
       return errorResponse("An account with this email already exists.", 409);
     }
 
     const hashedPassword = await hashPassword(password);
-    const admin = await Admin.create({
+
+    // Bootstrap: with no approved admin on the system, the first signup has to
+    // be able to use the panel, otherwise nobody could ever approve anybody.
+    const approvedAdminExists = await Admin.findOne(APPROVED_FILTER).lean();
+
+    if (!approvedAdminExists) {
+      const firstAdmin = await Admin.create({
+        name,
+        email: normalizedEmail,
+        password: hashedPassword,
+        role: "superadmin",
+        status: "approved",
+        isActive: true,
+      });
+
+      return successResponse(
+        {
+          id: firstAdmin._id,
+          name: firstAdmin.name,
+          email: firstAdmin.email,
+          role: firstAdmin.role,
+          status: firstAdmin.status,
+        },
+        "Superadmin account created successfully! You can now log in.",
+        201
+      );
+    }
+
+    const pending = await Admin.create({
       name,
-      email: email.toLowerCase().trim(),
+      email: normalizedEmail,
       password: hashedPassword,
-      role: selectedRole,
-      isActive: true,
+      role: requestedRole,
+      status: "pending",
+      isActive: false,
     });
 
     return successResponse(
       {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
+        id: pending._id,
+        name: pending.name,
+        email: pending.email,
+        role: pending.role,
+        status: pending.status,
       },
-      "Account created successfully! You can now log in.",
+      requestedRole === "superadmin"
+        ? "Superadmin request submitted. An existing superadmin must approve it before you can log in."
+        : "Account request submitted. A superadmin must approve it before you can log in.",
       201
     );
   } catch (error) {

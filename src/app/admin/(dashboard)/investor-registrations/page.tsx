@@ -7,6 +7,7 @@ import { Mail, Hash, Building2, Briefcase, MapPin, Globe } from "lucide-react";
 import DataTable, { Column } from "@/components/tables/DataTable";
 import Badge from "@/components/common/Badge";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 interface InvestorRegistrationItem {
   _id: string;
@@ -188,11 +189,20 @@ export default function AdminInvestorRegistrationsPage() {
             View and manage investor registration submissions from the public form
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-          <Globe size={16} className="text-emerald-500" />
-          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-            {total} Total
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+            <Globe size={16} className="text-emerald-500" />
+            <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+              {total} Total
+            </span>
+          </div>
+          <ExportCsvButton
+            endpoint="/api/investor-registrations/export"
+            search={search}
+            sort={sort}
+            order={order}
+            total={total}
+          />
         </div>
       </div>
 

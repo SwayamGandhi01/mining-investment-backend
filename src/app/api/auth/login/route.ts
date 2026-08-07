@@ -37,6 +37,19 @@ export async function POST(request: NextRequest) {
       return errorResponse("Invalid email or password", 401);
     }
 
+    // Awaiting or refused approval — checked before isActive so the message is
+    // specific rather than a generic "deactivated".
+    if (admin.status === "pending") {
+      return errorResponse(
+        "Your account request is awaiting approval from a superadmin",
+        403
+      );
+    }
+
+    if (admin.status === "rejected") {
+      return errorResponse("Your account request was not approved", 403);
+    }
+
     // Check if admin is active
     if (!admin.isActive) {
       return errorResponse("Your account has been deactivated", 403);

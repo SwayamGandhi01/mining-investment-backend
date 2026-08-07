@@ -1,14 +1,24 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+/** A stored resume or letter-of-interest document (PDF/DOC/DOCX). */
+export interface ISponsorshipAttachment {
+  url: string;
+  publicId: string;
+  fileName: string;
+}
+
 export interface IStudentSponsorship extends Document {
   firstName: string;
   lastName: string;
-  currentSchool: string;
-  programAndYear?: string;
   email: string;
   phone: string;
-  signUpForNews: boolean;
+  currentSchool: string;
+  programAndYear: string;
   language?: string;
+  resume?: ISponsorshipAttachment;
+  letterOfInterest?: string;
+  letterOfInterestFile?: ISponsorshipAttachment;
+  signUpForNews: boolean;
   registrationNumber: string;
   status: "pending" | "confirmed" | "cancelled";
   isDeleted: boolean;
@@ -16,16 +26,40 @@ export interface IStudentSponsorship extends Document {
   updatedAt: Date;
 }
 
+// _id: false — these are plain value objects, not separately addressable docs.
+const AttachmentSchema = new Schema<ISponsorshipAttachment>(
+  {
+    url: { type: String, required: true },
+    publicId: { type: String, default: "" },
+    fileName: { type: String, default: "" },
+  },
+  { _id: false }
+);
+
 const StudentSponsorshipSchema = new Schema<IStudentSponsorship>(
   {
+    // Section 1 — Personal Information
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
-    currentSchool: { type: String, required: true, trim: true },
-    programAndYear: { type: String, default: "" },
     email: { type: String, required: true, trim: true, lowercase: true },
     phone: { type: String, required: true, trim: true },
-    signUpForNews: { type: Boolean, default: true },
+
+    // Section 2 — Academic & Language Profile
+    currentSchool: { type: String, required: true, trim: true },
+    programAndYear: { type: String, required: true, trim: true },
+    // Free-form so the form's select can add options without a schema change
+    // rejecting live submissions.
     language: { type: String, default: "" },
+
+    // Section 3 — Resume & Letter of Interest. The form offers the letter as
+    // either typed text or an attached file, so both are optional.
+    resume: { type: AttachmentSchema, default: undefined },
+    letterOfInterest: { type: String, default: "" },
+    letterOfInterestFile: { type: AttachmentSchema, default: undefined },
+
+    // The form checkbox is ticked by default.
+    signUpForNews: { type: Boolean, default: true },
+
     registrationNumber: { type: String, required: true, unique: true },
     status: {
       type: String,
